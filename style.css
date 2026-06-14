@@ -351,7 +351,8 @@ body {
   opacity: 0;
   transition: opacity var(--transition);
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
+  justify-content: flex-end;
   padding: 16px;
 }
 
@@ -363,71 +364,100 @@ body {
   letter-spacing: 0.05em;
 }
 
-.masonry__play-icon {
+/* ── VIDEO TILE (mural) ── */
+/* Los videos aparecen como un tile más del mural, con relación 16:9
+   para diferenciarse sutilmente de las fotos y un botón de play elegante. */
+.masonry__item--video .masonry__media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #0a0a0a;
+}
+
+.masonry__item--video .masonry__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.masonry__play {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 44px;
-  height: 44px;
-  background: rgba(255,255,255,0.85);
+  width: 56px;
+  height: 56px;
+  border: none;
   border-radius: 50%;
+  background: rgba(255,255,255,0.88);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: none;
-  backdrop-filter: blur(4px);
+  cursor: pointer;
+  pointer-events: none; /* el click lo gestiona el tile completo */
+  box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+  transition: transform var(--transition), background var(--transition);
 }
 
-.masonry__play-icon::after {
-  content: '';
-  border-left: 14px solid var(--text-dark);
-  border-top: 9px solid transparent;
-  border-bottom: 9px solid transparent;
-  margin-left: 3px;
+.masonry__play svg {
+  width: 22px;
+  height: 22px;
+  margin-left: 2px;
+  fill: var(--text-dark);
+  transition: fill var(--transition);
 }
 
-/* ── VIDEO SHOWCASE (proyectos YouTube) ── */
-.video-showcase-wrap {
+.masonry__item--video:hover .masonry__play {
+  transform: translate(-50%, -50%) scale(1.12);
+  background: var(--accent);
+}
+
+.masonry__item--video:hover .masonry__play svg { fill: var(--white); }
+
+/* El tile de video no debe ampliar la imagen al hover (queda el play protagonista) */
+.masonry__item--video:hover img { transform: none; }
+
+.masonry__meta {
+  display: block;
+  margin-top: 3px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+}
+
+/* ── SECCIÓN VACÍA ── */
+.gallery-empty {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 16px;
-  padding-top: 8px;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
 }
 
-.video-showcase {
-  width: 100%;
-  max-width: 1100px;
-  animation: fadeIn 0.5s ease both;
+.gallery-empty__text {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 26px;
+  color: var(--text-light);
+  letter-spacing: 0.04em;
 }
 
-.video-showcase__frame {
-  position: relative;
-  width: 100%;
+/* ── LIGHTBOX: VIDEO YOUTUBE ── */
+.lightbox__video {
+  width: min(90vw, 1100px);
   aspect-ratio: 16 / 9;
   border-radius: 6px;
   overflow: hidden;
   background: #0a0a0a;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
 }
 
-.video-showcase__frame iframe {
-  position: absolute;
-  inset: 0;
+.lightbox__video iframe {
   width: 100%;
   height: 100%;
   border: none;
-}
-
-.video-showcase__caption {
-  margin-top: 12px;
-  text-align: center;
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
-  font-size: 15px;
-  color: var(--text-light);
-  letter-spacing: 0.04em;
 }
 
 /* ── LIGHTBOX ── */
@@ -640,8 +670,9 @@ body {
   .masonry { columns: 2; column-gap: 8px; }
   .masonry__item { margin-bottom: 8px; }
 
-  /* Video */
-  .video-showcase { max-width: 100%; }
+  /* Video tile: play más chico en mobile */
+  .masonry__play { width: 44px; height: 44px; }
+  .masonry__play svg { width: 18px; height: 18px; }
 
   /* Lightbox */
   .lightbox__prev { left: 8px; font-size: 22px; }
