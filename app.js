@@ -45,9 +45,11 @@ const sections = [
     label: 'Videoclips',
     role: 'Videoclips musicales',
     items: [
-      { type: 'youtube', id: 'ph-mFOwGMzo', title: 'DULCE',       meta: 'UNYX · Cámara' },
-      { type: 'youtube', id: 'Zm7LLhpThlo', title: '2 Minutos',   meta: 'Ian Cater & Zohar · Cámara' },
+      { type: 'youtube', id: 'PNRQ6c6GyzQ', title: 'Las Palabras Justas', meta: 'Franco Martínez · Cámara y Montaje' },
       { type: 'youtube', id: '0897I0LQ-pE', title: '1 Momento',   meta: 'Luca Laurito · Dirección y Color' },
+      { type: 'youtube', id: 'ph-mFOwGMzo', title: 'DULCE',       meta: 'UNYX · Cámara' },
+      { type: 'youtube', id: '2W9xCTxiQk8', title: 'POCO Set',     meta: 'Majo Chicar · Cámara' },
+      { type: 'youtube', id: 'Zm7LLhpThlo', title: '2 Minutos',   meta: 'Ian Cater & Zohar · Cámara' },
       { type: 'youtube', id: 'hl-OzYBNd7c', title: 'Sabor a Poco', meta: 'Peka Roux · Arte' },
     ],
   },
@@ -62,7 +64,6 @@ const sections = [
     label: 'Cobertura de Shows',
     role: 'Registro en vivo',
     items: [
-      { type: 'youtube', id: 'PNRQ6c6GyzQ', title: 'Las Palabras Justas', meta: 'Franco Martínez · Cámara y Montaje' },
       ...francoPhotos,
       ...luchiPhotos,
     ],
@@ -171,7 +172,6 @@ function renderGallery() {
   document.getElementById('gallerySep').textContent    = '';
   document.getElementById('galleryArtist').textContent = '';
 
-  grid.className = 'masonry';
   grid.style.columns = '';
   grid.innerHTML = '';
 
@@ -182,6 +182,11 @@ function renderGallery() {
     lbItems = [];
     return;
   }
+
+  // Secciones solo de video → grilla con orden de lectura (izq→der, arriba→abajo).
+  // El resto usa masonry por columnas (mejor para fotos de alturas variables).
+  const allVideos = sec.items.every(item => item.type === 'youtube');
+  grid.className = allVideos ? 'video-grid' : 'masonry';
 
   lbItems = sec.items;
 
