@@ -13,6 +13,7 @@
   --accent:    #c9a27f;
   --transition:0.35s cubic-bezier(0.4, 0, 0.2, 1);
   --flip:      1.05s cubic-bezier(0.42, 0.02, 0.18, 1);
+  --stage-w:   min(94vw, 1240px);  /* ancho de la revista (lo usan flechas y escenario) */
 }
 
 html { scroll-behavior: smooth; }
@@ -59,7 +60,7 @@ body {
 
 .book__stage {
   position: relative;
-  width: min(96vw, 1320px);
+  width: var(--stage-w);
   height: min(88vh, 760px);
   perspective: 2000px;
   overflow: hidden;
@@ -175,8 +176,11 @@ body {
   justify-content: center;
   padding: clamp(36px, 7vw, 84px);
   cursor: pointer;
-  background:
-    radial-gradient(90% 80% at 80% 20%, #1a1815 0%, #0a0908 70%);
+  background-image:
+    linear-gradient(100deg, rgba(6,6,6,0.92) 0%, rgba(6,6,6,0.6) 42%, rgba(6,6,6,0.32) 100%),
+    url('cover.jpg');
+  background-size: cover;
+  background-position: center;
 }
 .cover-title {
   font-size: clamp(72px, 15vw, 220px);
@@ -195,12 +199,13 @@ body {
   line-height: 1.0;
   letter-spacing: -0.01em;
   margin-bottom: 8px;
+  color: var(--accent);          /* naranjita */
 }
 .cover-by__role {
   font-size: 11px;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--cream-dim);       /* blanquito-grisecito */
 }
 
 /* ── ÍNDICE ── */
@@ -589,54 +594,32 @@ body {
 }
 
 /* ════════════════════════════════════════════════════════════
-   CONTROLES
+   FLECHAS (pegadas a los bordes de la revista)
    ════════════════════════════════════════════════════════════ */
-.controls[hidden] { display: none; }
-
 .ctrl {
-  position: fixed;
-  background: rgba(18,16,14,0.62);
+  position: fixed;          /* relativas a la ventana, justo por fuera de la revista */
+  z-index: 90;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 62px; height: 62px;
+  border-radius: 50%;
+  font-size: 26px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(14,12,10,0.55);
   border: 1px solid var(--line);
   color: var(--cream);
   cursor: pointer;
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
-  transition: background var(--transition), color var(--transition), border-color var(--transition);
+  box-shadow: 0 8px 26px rgba(0,0,0,0.45);
+  transition: background var(--transition), color var(--transition), border-color var(--transition), transform var(--transition);
 }
-.ctrl--prev, .ctrl--next {
-  top: 50%;
-  transform: translateY(-50%);
-  width: 50px; height: 50px;
-  border-radius: 50%;
-  font-size: 19px;
-  display: flex; align-items: center; justify-content: center;
-}
-.ctrl--prev { left: clamp(14px, 3vw, 40px); }
-.ctrl--next { right: clamp(14px, 3vw, 40px); }
-.ctrl:hover { background: var(--accent); color: #111; border-color: var(--accent); }
-
-.controls__bottom {
-  position: fixed;
-  bottom: 24px; left: 50%;
-  transform: translateX(-50%);
-  display: flex; align-items: center; gap: 18px;
-}
-.ctrl--home {
-  position: static;
-  border-radius: 100px;
-  padding: 9px 20px;
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-.folio {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--muted);
-  white-space: nowrap;
-}
+.ctrl[hidden] { display: none; }
+/* Justo por fuera del borde de la revista, con ~16px de aire.
+   El max() evita que se salgan de la pantalla cuando no hay margen. */
+.ctrl--prev { left:  max(8px, calc(50vw - var(--stage-w) / 2 - 78px)); }
+.ctrl--next { right: max(8px, calc(50vw - var(--stage-w) / 2 - 78px)); }
+.ctrl:hover { background: var(--accent); color: #111; border-color: var(--accent); transform: translateY(-50%) scale(1.06); }
 
 /* ════════════════════════════════════════════════════════════
    DESPLIEGUE DE TRABAJO
@@ -807,10 +790,9 @@ body {
   .mag { padding: 12px 8px; }
   .book__stage { width: 96vw; height: 86vh; }
 
-  .ctrl--prev, .ctrl--next { width: 40px; height: 40px; font-size: 16px; }
-  .ctrl--prev { left: 8px; }
-  .ctrl--next { right: 8px; }
-  .controls__bottom { bottom: 14px; gap: 12px; }
+  .ctrl--prev, .ctrl--next { width: 52px; height: 52px; font-size: 22px; }
+  .ctrl--prev { left: 10px; }
+  .ctrl--next { right: 10px; }
 
   /* Apilar variantes en vertical */
   .v-split, .v-editorial, .v-collage { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }

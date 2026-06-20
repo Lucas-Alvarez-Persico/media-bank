@@ -160,10 +160,6 @@ function workCover(work) {
 const isVideoWork = (work) => work.items.length === 1 && work.items[0].type === 'youtube';
 const playSVG = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`;
 
-// Atributo para carga diferida del fondo (lo activa loadNear según la página).
-function lazyBg(url) {
-  return `class="lazy-bg" data-bg="url('${url}')"`;
-}
 
 function workInfoHTML(def) {
   const w = def.work;
@@ -195,7 +191,7 @@ function workHTML(def) {
   }
 
   if (w.variant === 'splitR' || w.variant === 'splitL') {
-    const imgCol  = `<div class="work-img" ${lazyBg(workCover(w))}>${play}</div>`;
+    const imgCol  = `<div class="work-img lazy-bg" data-bg="url('${workCover(w)}')">${play}</div>`;
     const textCol = `<div class="work-col"><span class="work-no display">${w.no}</span>${workInfoHTML(def)}</div>`;
     const order   = w.variant === 'splitR' ? textCol + imgCol : imgCol + textCol;
     return `<div class="pg pg--work v-split v-${w.variant}${vid}" style="--accent:${acc}">${order}</div>`;
@@ -205,7 +201,7 @@ function workHTML(def) {
     return `
       <div class="pg pg--work v-editorial${vid}" style="--accent:${acc}">
         <span class="work-no--ghost display">${w.no}</span>
-        <div class="work-frame"><div class="work-img" ${lazyBg(workCover(w))}>${play}</div></div>
+        <div class="work-frame"><div class="work-img lazy-bg" data-bg="url('${workCover(w)}')">${play}</div></div>
         <div class="work-col">${workInfoHTML(def)}</div>
       </div>`;
   }
@@ -228,7 +224,7 @@ function frontHTML(def, i) {
     case 'cover':
       return `
         <div class="pg pg--cover">
-          <div class="pg__bar"><span>Portfolio</span><span>MMXXV</span></div>
+          <div class="pg__bar"><span>Portfolio</span><span></span></div>
           <h1 class="cover-title display">PORT<br>FOLIO.</h1>
           <div class="cover-by">
             <span class="cover-by__name">Martina López Parafita</span>
@@ -240,7 +236,7 @@ function frontHTML(def, i) {
     case 'toc':
       return `
         <div class="pg pg--toc">
-          <div class="pg__bar"><span>Índice</span><span>MMXXV</span></div>
+          <div class="pg__bar"><span>Índice</span><span></span></div>
           <h2 class="toc-title display">CONTENIDO</h2>
           <ol class="toc2">
             ${indexEntries.map(e => `
@@ -474,9 +470,9 @@ function go(dir)        { flipTo(cur + dir); }
 function goToPage(target) { flipTo(target); }
 
 function updateChrome() {
-  const controls = document.getElementById('controls');
-  if (cur === 0) controls.setAttribute('hidden', '');
-  else           controls.removeAttribute('hidden');
+  const hide = (cur === 0); // en la portada no se muestran las flechas
+  document.getElementById('navPrev').hidden = hide;
+  document.getElementById('navNext').hidden = hide;
 }
 
 // ════════════════════════════════════════════════════════════════════════════
