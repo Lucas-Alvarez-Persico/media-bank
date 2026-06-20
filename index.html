@@ -3,69 +3,47 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Martina Lopez Parafita — Photography</title>
+  <title>Martina López Parafita — Photography</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- ── HERO ── -->
-  <section class="hero" id="hero">
-    <div class="carousel" id="carousel">
-      <!-- slides injected by JS -->
-    </div>
-    <div class="hero-overlay"></div>
+  <!-- ── REVISTA ── -->
+  <main class="mag" id="mag">
 
-    <nav class="top-nav">
-      <span class="nav-logo">MLP</span>
-      <ul class="nav-links">
-        <li><a href="#portfolio">Portfolio</a></li>
-        <li><a href="#contact">Contacto</a></li>
-      </ul>
+    <!-- Navegación de secciones (aparece una vez pasado el índice) -->
+    <nav class="topnav" id="topnav" hidden>
+      <div class="topnav__inner" id="topnavInner"><!-- pestañas inyectadas por JS --></div>
     </nav>
 
-    <div class="hero-content">
-      <p class="hero-eyebrow">Photography &amp; Visual Art</p>
-      <h1 class="hero-name">
-        <span class="line-first">Martina</span>
-        <span class="line-last">López Parafita</span>
-      </h1>
-    </div>
-
-    <a href="#portfolio" class="scroll-hint" aria-label="Scroll down">
-      <span class="scroll-hint__line"></span>
-    </a>
-
-    <!-- carousel dots -->
-    <div class="carousel-dots" id="carouselDots"></div>
-  </section>
-
-  <!-- ── PORTFOLIO ── -->
-  <section class="portfolio" id="portfolio">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <p class="sidebar-heading">Proyectos</p>
-      <ul class="sidebar-list" id="sidebarList">
-        <!-- injected by JS -->
-      </ul>
-    </aside>
-
-    <!-- Grid -->
-    <div class="gallery-wrap">
-      <div class="gallery-header">
-        <h2 class="gallery-title" id="galleryTitle"></h2>
-        <div class="gallery-meta">
-          <span class="gallery-role" id="galleryRole"></span>
-          <span class="gallery-sep" id="gallerySep"></span>
-          <span class="gallery-artist" id="galleryArtist"></span>
-        </div>
-      </div>
-      <div class="masonry" id="masonryGrid">
-        <!-- injected by JS -->
+    <div class="book" id="book">
+      <div class="book__stage" id="stage">
+        <!-- páginas inyectadas por JS -->
       </div>
     </div>
+
+    <!-- Controles de navegación -->
+    <div class="controls" id="controls" hidden>
+      <button class="ctrl ctrl--prev" id="navPrev" aria-label="Página anterior">&#8592;</button>
+      <button class="ctrl ctrl--next" id="navNext" aria-label="Página siguiente">&#8594;</button>
+    </div>
+  </main>
+
+  <!-- ── DESPLIEGUE DE TRABAJO ── -->
+  <section class="work" id="work" aria-hidden="true">
+    <div class="work__bar">
+      <div class="work__heading">
+        <span class="work__eyebrow" id="workEyebrow"></span>
+        <h2 class="work__title" id="workTitle"></h2>
+        <span class="work__meta" id="workMeta"></span>
+        <p class="work__desc" id="workDesc"></p>
+      </div>
+      <button class="work__close" id="workClose" aria-label="Cerrar">Volver a la revista &#10005;</button>
+    </div>
+    <div class="work__body" id="workBody"></div>
   </section>
 
   <!-- ── LIGHTBOX ── -->
@@ -76,23 +54,6 @@
     <div class="lightbox__media" id="lbMedia"></div>
     <p class="lightbox__caption" id="lbCaption"></p>
   </div>
-
-  <!-- ── CONTACT ── -->
-  <footer class="contact" id="contact">
-    <div class="contact-inner">
-      <p class="contact-eyebrow">Get in touch</p>
-      <h2 class="contact-heading">Trabajemos juntos</h2>
-      <a href="mailto:hola@martinalopezparafita.com" class="contact-email">
-        hola@martinalopezparafita.com
-      </a>
-      <div class="contact-socials">
-        <a href="#" target="_blank" rel="noopener">Instagram</a>
-        <a href="#" target="_blank" rel="noopener">Behance</a>
-        <a href="#" target="_blank" rel="noopener">LinkedIn</a>
-      </div>
-      <p class="contact-copy">&copy; 2025 Martina Lopez Parafita. All rights reserved.</p>
-    </div>
-  </footer>
 
   <script src="app.js"></script>
 </body>
