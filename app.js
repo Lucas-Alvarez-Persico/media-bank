@@ -160,8 +160,9 @@ function workCover(work) {
 const isVideoWork = (work) => work.items.length === 1 && work.items[0].type === 'youtube';
 const playSVG = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`;
 
-function workBgStyle(work) {
-  return `background-image:url('${workCover(work)}')`;
+// Atributo para carga diferida del fondo (lo activa loadNear según la página).
+function lazyBg(url) {
+  return `class="lazy-bg" data-bg="url('${url}')"`;
 }
 
 function workInfoHTML(def) {
@@ -185,7 +186,7 @@ function workHTML(def) {
   if (w.variant === 'full') {
     return `
       <div class="pg pg--work v-full${vid}" style="--accent:${acc}">
-        <div class="work-bg" style="${workBgStyle(w)}"></div>
+        <div class="work-bg lazy-bg" data-bg="url('${workCover(w)}')"></div>
         <div class="work-bg__grad"></div>
         <span class="work-no display">${w.no}</span>
         ${play}
@@ -194,7 +195,7 @@ function workHTML(def) {
   }
 
   if (w.variant === 'splitR' || w.variant === 'splitL') {
-    const imgCol  = `<div class="work-img" style="${workBgStyle(w)}">${play}</div>`;
+    const imgCol  = `<div class="work-img" ${lazyBg(workCover(w))}>${play}</div>`;
     const textCol = `<div class="work-col"><span class="work-no display">${w.no}</span>${workInfoHTML(def)}</div>`;
     const order   = w.variant === 'splitR' ? textCol + imgCol : imgCol + textCol;
     return `<div class="pg pg--work v-split v-${w.variant}${vid}" style="--accent:${acc}">${order}</div>`;
@@ -204,14 +205,14 @@ function workHTML(def) {
     return `
       <div class="pg pg--work v-editorial${vid}" style="--accent:${acc}">
         <span class="work-no--ghost display">${w.no}</span>
-        <div class="work-frame"><div class="work-img" style="${workBgStyle(w)}">${play}</div></div>
+        <div class="work-frame"><div class="work-img" ${lazyBg(workCover(w))}>${play}</div></div>
         <div class="work-col">${workInfoHTML(def)}</div>
       </div>`;
   }
 
   // collage (proyectos con muchas fotos — siempre fotos, nunca video)
   const thumbs = w.items.filter(it => it.type === 'image').slice(0, 5)
-    .map((it, i) => `<div class="collage__cell c${i}" style="background-image:url('${it.src}')"></div>`).join('');
+    .map((it, i) => `<div class="collage__cell c${i} lazy-bg" data-bg="url('${it.src}')"></div>`).join('');
   return `
     <div class="pg pg--work v-collage" style="--accent:${acc}">
       <div class="collage">${thumbs}</div>
@@ -254,7 +255,7 @@ function frontHTML(def, i) {
     case 'about':
       return `
         <div class="pg pg--about">
-          <div class="about__bg" style="background-image:url('${aboutBg}')"></div>
+          <div class="about__bg lazy-bg" data-bg="url('${aboutBg}')"></div>
           <div class="about__inner">
             <span class="kicker">Sobre mí</span>
             <h2 class="about-title display">HOLA,<br>SOY MARTINA</h2>
@@ -271,7 +272,7 @@ function frontHTML(def, i) {
     case 'divider': {
       const sec = def.section;
       const thumbs = sec.works.slice(0, 3).map(w =>
-        `<div class="divider__thumb" style="background-image:url('${workCover(w)}')"></div>`).join('');
+        `<div class="divider__thumb lazy-bg" data-bg="url('${workCover(w)}')"></div>`).join('');
       return `
         <div class="pg pg--divider" style="--accent:${sec.accent}">
           <span class="divider__num display">${pad(def.no)}</span>
@@ -354,8 +355,34 @@ function layout() {
     page.style.zIndex = (i < cur) ? i : (pages.length - i);
   });
   document.getElementById('book').classList.toggle('is-closed', cur === 0);
+  loadNear();
   updateChrome();
   updateTopnav();
+}
+
+// ── Carga diferida de fondos (clave para no saturar la memoria en celular) ──
+const BG_BEHIND = 2, BG_AHEAD = 3; // ventana de páginas con imagen cargada
+function loadNear() {
+  const lo = Math.max(0, cur - BG_BEHIND);
+  const hi = Math.min(pages.length - 1, cur + BG_AHEAD);
+  for (let i = lo; i <= hi; i++) {
+    pages[i].querySelectorAll('.lazy-bg').forEach(el => {
+      if (el.dataset.bg && el.style.backgroundImage !== el.dataset.bg) {
+        el.style.backgroundImage = el.dataset.bg;
+      }
+    });
+  }
+}
+function unloadFar() {
+  const lo = Math.max(0, cur - BG_BEHIND);
+  const hi = Math.min(pages.length - 1, cur + BG_AHEAD);
+  pages.forEach((p, i) => {
+    if (i < lo || i > hi) {
+      p.querySelectorAll('.lazy-bg').forEach(el => {
+        if (el.style.backgroundImage) el.style.backgroundImage = '';
+      });
+    }
+  });
 }
 
 // ── Barra de secciones (visible una vez pasado el índice) ───────────────────
@@ -414,9 +441,11 @@ function flipTo(target) {
   }
 
   cur = target;
+  loadNear(); // asegura que la página destino tenga su imagen antes de revelarse
 
   // Anima sólo la hoja que se da vuelta.
   moving.style.zIndex = pages.length + 5;
+  moving.style.willChange = 'transform';
   moving.classList.toggle('is-flipped', pages.indexOf(moving) < target);
   const shade = moving.querySelector('.page__shade');
   if (shade) {
@@ -426,13 +455,14 @@ function flipTo(target) {
     );
   }
 
-  // Al terminar el giro, reconcilia el estado de todas las hojas sin animación.
+  // Al terminar el giro, reconcilia el estado y libera memoria de páginas lejanas.
   clearTimeout(reconcileTimer);
   reconcileTimer = setTimeout(() => {
-    pages.forEach(p => { p.style.transition = 'none'; });
+    pages.forEach(p => { p.style.transition = 'none'; p.style.willChange = ''; });
     layout();
     void stage.offsetWidth;
     pages.forEach(p => { p.style.transition = ''; });
+    unloadFar();
   }, 1150);
 
   document.getElementById('book').classList.toggle('is-closed', cur === 0);
@@ -599,22 +629,11 @@ function initSwipe() {
   }, { passive: true });
 }
 
-function preloadImages() {
-  const load = (src) => { const img = new Image(); img.src = src; };
-  load(aboutBg);
-  sections.forEach(sec => sec.works.forEach(work => {
-    work.items.forEach(item => {
-      if (item.type === 'image')   load(item.src);
-      if (item.type === 'youtube') load(ytThumb(item.id));
-    });
-  }));
-}
-
 // ════════════════════════════════════════════════════════════════════════════
 //  INIT
 // ════════════════════════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
-  buildBook();
+  buildBook();   // loadNear() (dentro de layout) carga sólo las primeras páginas
   buildTopnav();
   initSwipe();
 
@@ -627,7 +646,4 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('lightbox').addEventListener('click', (e) => {
     if (e.target === document.getElementById('lightbox')) closeLightbox();
   });
-
-  if ('requestIdleCallback' in window) requestIdleCallback(preloadImages);
-  else setTimeout(preloadImages, 1500);
 });

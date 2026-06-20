@@ -79,7 +79,8 @@ body {
   transform-origin: left center;
   transform-style: preserve-3d;
   transition: transform var(--flip);
-  will-change: transform;
+  /* will-change se aplica sólo a la hoja que gira (vía JS) para no forzar
+     21 capas GPU permanentes — eso saturaba la memoria en celulares. */
 }
 .page.is-flipped { transform: rotateY(-180deg); }
 
@@ -556,6 +557,7 @@ body {
   max-width: 100%;
   overflow-x: auto;
   background: rgba(14,13,12,0.72);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   border: 1px solid var(--line);
   border-radius: 100px;
@@ -597,6 +599,7 @@ body {
   border: 1px solid var(--line);
   color: var(--cream);
   cursor: pointer;
+  -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   transition: background var(--transition), color var(--transition), border-color var(--transition);
 }
@@ -686,6 +689,7 @@ body {
   padding: 11px 20px;
   font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
   cursor: pointer;
+  -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   transition: background var(--transition), color var(--transition);
 }
@@ -795,9 +799,11 @@ body {
 @keyframes pulseHint { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
 
 /* ════════════════════════════════════════════════════════════
-   RESPONSIVE (mobile: página vertical, columnas apiladas)
+   RESPONSIVE
+   Sólo en VERTICAL (portrait) se apila como mobile. En horizontal
+   (landscape) — aunque sea un celular — se usa el layout de PC.
    ════════════════════════════════════════════════════════════ */
-@media (max-width: 768px) {
+@media (max-width: 768px) and (orientation: portrait) {
   .mag { padding: 12px 8px; }
   .book__stage { width: 96vw; height: 86vh; }
 
