@@ -7,8 +7,10 @@
 const ytThumb = (id) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
 
 const video  = (id, title, meta) => ({ type: 'youtube', id, title, meta });
+// `thumb` (máx. 1000px, generada con scripts/make_thumbs.py) es lo que pinta la
+// revista y la grilla; `src` (original, ~6MB c/u) queda sólo para el lightbox.
 const photos = (dir, files, title, meta = '') =>
-  files.map(f => ({ type: 'image', src: `fotos/${dir}/${f}`, title, meta }));
+  files.map(f => ({ type: 'image', src: `fotos/${dir}/${f}`, thumb: `fotos/${dir}/thumbs/${f}`, title, meta }));
 
 const francoItems = photos('franco-ladran-sancho', [
   '07ae18244794795.699f38d5bba80.webp', '0cc4de244794795.699f38d5b8347.webp',
@@ -110,7 +112,7 @@ const sections = [
 ];
 
 // Imagen atmosférica para la página "Sobre mí"
-const aboutBg = 'fotos/luchi-davit/bc8dee233853197.68b7c3d0bf343.webp';
+const aboutBg = 'fotos/luchi-davit/thumbs/bc8dee233853197.68b7c3d0bf343.webp';
 
 // ── Construcción del orden de páginas ───────────────────────────────────────
 const VARIANTS = ['full', 'splitR', 'editorial', 'splitL'];
@@ -147,13 +149,14 @@ let pages   = [];
 let cur     = 0;
 let lbItems = [];
 let lbIndex = 0;
+let zoomed  = false; // false: la revista descansa sobre la mesa
 
 // ════════════════════════════════════════════════════════════════════════════
 //  PLANTILLAS DE PÁGINA
 // ════════════════════════════════════════════════════════════════════════════
 function workCover(work) {
   const img = work.items.find(it => it.type === 'image');
-  if (img) return img.src;
+  if (img) return img.thumb || img.src;
   const vid = work.items.find(it => it.type === 'youtube');
   return vid ? ytThumb(vid.id) : '';
 }
@@ -208,7 +211,7 @@ function workHTML(def) {
 
   // collage (proyectos con muchas fotos — siempre fotos, nunca video)
   const thumbs = w.items.filter(it => it.type === 'image').slice(0, 5)
-    .map((it, i) => `<div class="collage__cell c${i} lazy-bg" data-bg="url('${it.src}')"></div>`).join('');
+    .map((it, i) => `<div class="collage__cell c${i} lazy-bg" data-bg="url('${it.thumb || it.src}')"></div>`).join('');
   return `
     <div class="pg pg--work v-collage" style="--accent:${acc}">
       <div class="collage">${thumbs}</div>
@@ -349,6 +352,7 @@ function layout() {
   pages.forEach((page, i) => {
     page.classList.toggle('is-flipped', i < cur);
     page.style.zIndex = (i < cur) ? i : (pages.length - i);
+    page.style.visibility = ''; // limpia el override inline de giros (aun interrumpidos)
   });
   document.getElementById('book').classList.toggle('is-closed', cur === 0);
   loadNear();
@@ -363,9 +367,20 @@ function loadNear() {
   const hi = Math.min(pages.length - 1, cur + BG_AHEAD);
   for (let i = lo; i <= hi; i++) {
     pages[i].querySelectorAll('.lazy-bg').forEach(el => {
-      if (el.dataset.bg && el.style.backgroundImage !== el.dataset.bg) {
+      if (!el.dataset.bg || el.style.backgroundImage === el.dataset.bg) return;
+      // Decodifica fuera del hilo principal antes de pintar: asignar el
+      // background directo decodificaba el webp en el mismo frame en que
+      // arranca el giro y se sentía un tirón.
+      const src = el.dataset.bg.slice(5, -2); // url('…') → …
+      const img = new Image();
+      const apply = () => {
+        if (Math.abs(i - cur) > Math.max(BG_BEHIND, BG_AHEAD)) return; // ya quedó lejos
         el.style.backgroundImage = el.dataset.bg;
-      }
+      };
+      img.src = src;
+      if (img.decode) img.decode().then(apply).catch(apply);
+      else if (img.complete) apply();
+      else img.onload = apply;
     });
   }
 }
@@ -395,8 +410,8 @@ function buildTopnav() {
 let lastActiveTab = -1;
 function updateTopnav() {
   const nav = document.getElementById('topnav');
-  // Se muestra recién después del índice (portada = 0, índice = 1).
-  if (cur < 2) { nav.setAttribute('hidden', ''); lastActiveTab = -1; return; }
+  // Se muestra recién después del índice (portada = 0, índice = 1) y en modo lectura.
+  if (cur < 2 || !zoomed) { nav.setAttribute('hidden', ''); lastActiveTab = -1; return; }
   nav.removeAttribute('hidden');
 
   let active = 0;
@@ -414,52 +429,109 @@ function updateTopnav() {
 
 let reconcileTimer = null;
 
+// ── Giro de hoja (Web Animations API) ───────────────────────────────────────
+// La hoja no rota rígida: se levanta hacia la cámara (translateZ), se comba
+// apenas (skewY) y se desvanece al reposar, con una sombra que barre tanto la
+// hoja que gira como la página que se revela debajo.
+const FLIP_MS = 1250;
+const FLIP_LIFT = 56; // px que la hoja se levanta de la revista a mitad de giro
+
+let activeFlips = [];
+function settleFlips() {
+  activeFlips.forEach(a => { try { a.cancel(); } catch (e) {} });
+  activeFlips = [];
+  // limpia los overrides del giro (aun si quedó a mitad de camino)
+  pages.forEach(p => { p.style.visibility = ''; p.style.willChange = ''; });
+}
+
+// Sólo transform + opacity: ambas corren en el compositor. Meter `visibility`
+// acá bajaba la animación al hilo principal y se sentía trabada; la visibilidad
+// de la hoja se maneja con un estilo inline durante el giro.
+function flipKeyframes(dir) {
+  if (dir > 0) return [
+    { opacity: 1, transform: 'rotateY(0deg) translateZ(0px) skewY(0deg)',
+      offset: 0, easing: 'cubic-bezier(0.55, 0.05, 0.55, 0.55)' },
+    { opacity: 1, transform: `rotateY(-50deg) translateZ(${FLIP_LIFT * 0.7}px) skewY(1.4deg)`,
+      offset: 0.32, easing: 'cubic-bezier(0.35, 0.3, 0.4, 0.75)' },
+    { opacity: 1, transform: `rotateY(-96deg) translateZ(${FLIP_LIFT}px) skewY(2.2deg)`,
+      offset: 0.54, easing: 'cubic-bezier(0.3, 0.35, 0.35, 1)' },
+    { opacity: 0.85, transform: `rotateY(-152deg) translateZ(${FLIP_LIFT * 0.35}px) skewY(0.8deg)`,
+      offset: 0.82, easing: 'ease-out' },
+    { opacity: 0, transform: 'rotateY(-180deg) translateZ(0px) skewY(0deg)', offset: 1 },
+  ];
+  return [
+    { opacity: 0, transform: 'rotateY(-180deg) translateZ(0px) skewY(0deg)',
+      offset: 0, easing: 'cubic-bezier(0.55, 0.05, 0.55, 0.55)' },
+    { opacity: 1, transform: `rotateY(-148deg) translateZ(${FLIP_LIFT * 0.4}px) skewY(-0.8deg)`,
+      offset: 0.16, easing: 'cubic-bezier(0.35, 0.3, 0.4, 0.75)' },
+    { opacity: 1, transform: `rotateY(-84deg) translateZ(${FLIP_LIFT}px) skewY(-2.2deg)`,
+      offset: 0.5, easing: 'cubic-bezier(0.3, 0.35, 0.35, 1)' },
+    { opacity: 1, transform: `rotateY(-26deg) translateZ(${FLIP_LIFT * 0.35}px) skewY(-1deg)`,
+      offset: 0.82, easing: 'ease-out' },
+    { opacity: 1, transform: 'rotateY(0deg) translateZ(0px) skewY(0deg)', offset: 1 },
+  ];
+}
+
 // Pasa a `target` con UN solo paso de hoja, aunque haya páginas en el medio
 // (salto): las hojas intermedias se reposicionan al instante y sólo se anima
 // la hoja que revela la página destino.
 function flipTo(target) {
   target = Math.max(0, Math.min(pages.length - 1, target));
   if (target === cur) return;
+  clearTimeout(reconcileTimer);
+  settleFlips(); // si había un giro en el aire, lo asienta
+
   const dir    = target > cur ? 1 : -1;
   const moving = dir > 0 ? pages[cur] : pages[target];
-  const stage  = document.getElementById('stage');
+  const under  = dir > 0 ? pages[target] : pages[cur]; // página que recibe la sombra
 
-  // Hacia adelante: las hojas intermedias se voltean al instante (quedan a la
-  // izquierda, fuera de vista) para que `moving` revele directamente el destino.
+  // Hacia adelante: las hojas intermedias se voltean al instante (quedan
+  // ocultas) para que `moving` revele directamente el destino.
   if (dir > 0) {
     for (let i = cur + 1; i < target; i++) {
-      pages[i].style.transition = 'none';
       pages[i].classList.add('is-flipped');
       pages[i].style.zIndex = i;
     }
-    void stage.offsetWidth; // aplica el cambio sin animación
-    for (let i = cur + 1; i < target; i++) pages[i].style.transition = '';
   }
 
   cur = target;
   loadNear(); // asegura que la página destino tenga su imagen antes de revelarse
 
-  // Anima sólo la hoja que se da vuelta.
+  moving.classList.toggle('is-flipped', pages.indexOf(moving) < cur);
   moving.style.zIndex = pages.length + 5;
-  moving.style.willChange = 'transform';
-  moving.classList.toggle('is-flipped', pages.indexOf(moving) < target);
+  moving.style.visibility = 'visible'; // pisa el hidden de .is-flipped mientras gira
+  moving.style.willChange = 'transform, opacity';
+
+  activeFlips.push(moving.animate(flipKeyframes(dir), { duration: FLIP_MS, fill: 'forwards' }));
+
+  // Luz que barre la hoja mientras gira.
   const shade = moving.querySelector('.page__shade');
   if (shade) {
-    shade.animate(
-      [{ opacity: 0 }, { opacity: 0.85, offset: 0.5 }, { opacity: 0 }],
-      { duration: 1050, easing: 'ease-in-out' }
-    );
+    activeFlips.push(shade.animate(
+      [{ opacity: 0 }, { opacity: 0.7, offset: 0.45 }, { opacity: 0 }],
+      { duration: FLIP_MS, easing: 'ease-in-out' }
+    ));
+  }
+
+  // Sombra proyectada sobre la página de abajo: se disipa al abrir (adelante)
+  // o crece a medida que la hoja aterriza (atrás).
+  const cast = under !== moving && under.querySelector('.page__shade');
+  if (cast) {
+    activeFlips.push(cast.animate(
+      dir > 0
+        ? [{ opacity: 0.5 }, { opacity: 0.22, offset: 0.55 }, { opacity: 0 }]
+        : [{ opacity: 0 }, { opacity: 0.45, offset: 1 }],
+      { duration: FLIP_MS, easing: dir > 0 ? 'ease-out' : 'ease-in' }
+    ));
   }
 
   // Al terminar el giro, reconcilia el estado y libera memoria de páginas lejanas.
-  clearTimeout(reconcileTimer);
   reconcileTimer = setTimeout(() => {
-    pages.forEach(p => { p.style.transition = 'none'; p.style.willChange = ''; });
+    settleFlips();
+    moving.style.willChange = '';
     layout();
-    void stage.offsetWidth;
-    pages.forEach(p => { p.style.transition = ''; });
     unloadFar();
-  }, 1150);
+  }, FLIP_MS + 60);
 
   document.getElementById('book').classList.toggle('is-closed', cur === 0);
   updateChrome();
@@ -470,9 +542,21 @@ function go(dir)        { flipTo(cur + dir); }
 function goToPage(target) { flipTo(target); }
 
 function updateChrome() {
-  const hide = (cur === 0); // en la portada no se muestran las flechas
+  const hide = (cur === 0) || !zoomed; // en la portada o sobre la mesa no hay flechas
   document.getElementById('navPrev').hidden = hide;
   document.getElementById('navNext').hidden = hide;
+}
+
+// ── Cámara: mesa ↔ lectura ──────────────────────────────────────────────────
+function setZoom(z) {
+  if (zoomed === z) return;
+  zoomed = z;
+  document.body.classList.toggle('is-table', !z);
+  document.getElementById('zoomOut').hidden = !z;
+  // Al dejarla en la mesa, la revista se cierra: queda la tapa adelante.
+  if (!z && cur !== 0) flipTo(0);
+  updateChrome();
+  updateTopnav();
 }
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -483,12 +567,12 @@ function tileMarkup(item) {
   const meta  = item.meta ? `<span class="masonry__meta">${item.meta}</span>` : '';
   if (item.type === 'youtube') {
     return `
-      <div class="masonry__media"><img src="${ytThumb(item.id)}" alt="${label}" loading="lazy" /></div>
+      <div class="masonry__media"><img src="${ytThumb(item.id)}" alt="${label}" loading="lazy" decoding="async" /></div>
       <button class="masonry__play" aria-label="Reproducir ${label}">${playSVG}</button>
       <div class="masonry__overlay"><span class="masonry__caption">${label}</span>${meta}</div>`;
   }
   return `
-    <img src="${item.src}" alt="${label}" loading="lazy" />
+    <img src="${item.thumb || item.src}" alt="${label}" loading="lazy" decoding="async" />
     <div class="masonry__overlay"><span class="masonry__caption">${label}</span>${meta}</div>`;
 }
 
@@ -580,7 +664,7 @@ function renderLightbox() {
           allowfullscreen></iframe>
       </div>`;
   } else {
-    media.innerHTML = `<img src="${item.src}" alt="${label}" />`;
+    media.innerHTML = `<img src="${item.src}" alt="${label}" decoding="async" />`;
   }
   const metaText = item.meta ? `${label} — ${item.meta}` : label;
   caption.textContent = `${metaText}  ·  ${lbIndex + 1} / ${lbItems.length}`;
@@ -608,6 +692,11 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeWork();
     return;
   }
+  if (!zoomed) {
+    if (['ArrowLeft', 'ArrowRight', 'Enter', ' '].includes(e.key)) setZoom(true);
+    return;
+  }
+  if (e.key === 'Escape')     setZoom(false);
   if (e.key === 'ArrowLeft')  go(-1);
   if (e.key === 'ArrowRight') go(1);
 });
@@ -620,9 +709,35 @@ function initSwipe() {
     if (startX === null) return;
     const dx = e.changedTouches[0].clientX - startX;
     startX = null;
+    if (!zoomed) return; // sobre la mesa, el tap acerca; no se pasa de página
     if (Math.abs(dx) < 45) return;
     if (dx < 0) go(1); else go(-1);
   }, { passive: true });
+}
+
+// Sobre la mesa, cualquier click en la revista acerca la cámara; en modo
+// lectura, un click fuera de la revista la vuelve a apoyar en la mesa.
+function initZoom() {
+  const mag  = document.getElementById('mag');
+  const book = document.getElementById('book');
+
+  // Fase de captura: intercepta el click antes que los handlers de las páginas.
+  mag.addEventListener('click', (e) => {
+    if (!zoomed) {
+      e.stopPropagation();
+      e.preventDefault();
+      setZoom(true);
+    }
+  }, true);
+
+  mag.addEventListener('click', (e) => {
+    if (!zoomed) return;
+    if (book.contains(e.target)) return;
+    if (e.target.closest('.topnav')) return;
+    setZoom(false);
+  });
+
+  document.getElementById('zoomOut').addEventListener('click', () => setZoom(false));
 }
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -632,6 +747,7 @@ document.addEventListener('DOMContentLoaded', () => {
   buildBook();   // loadNear() (dentro de layout) carga sólo las primeras páginas
   buildTopnav();
   initSwipe();
+  initZoom();
 
   document.getElementById('navPrev').addEventListener('click', () => go(-1));
   document.getElementById('navNext').addEventListener('click', () => go(1));
