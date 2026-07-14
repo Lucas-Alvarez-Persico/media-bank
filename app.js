@@ -740,10 +740,21 @@ function initZoom() {
   document.getElementById('zoomOut').addEventListener('click', () => setZoom(false));
 }
 
+// ── Bloqueo de zoom por gestos ──────────────────────────────────────────────
+// La escena es un viewport fijo (vh/vw + fixed + 3D): el zoom del navegador la
+// rompe. El viewport meta y touch-action (pan-x pan-y bloquea pinch y doble
+// tap) cubren Android/Chrome; iOS Safari ignora user-scalable=no, así que el
+// pinch se frena además con los eventos gesture* (propietarios de Safari).
+function initNoZoom() {
+  ['gesturestart', 'gesturechange', 'gestureend'].forEach(ev =>
+    document.addEventListener(ev, (e) => e.preventDefault(), { passive: false }));
+}
+
 // ════════════════════════════════════════════════════════════════════════════
 //  INIT
 // ════════════════════════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
+  initNoZoom();
   buildBook();   // loadNear() (dentro de layout) carga sólo las primeras páginas
   buildTopnav();
   initSwipe();

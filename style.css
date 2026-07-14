@@ -20,9 +20,22 @@
   --book-scale: 0.75;              /* tamaño en modo lectura (como un zoom de navegador al 75%) */
 }
 
+/* dvh: alto real del viewport en celular (100vh clásico no descuenta la barra
+   de URL, y al mostrarse/ocultarse la barra el layout saltaba o quedaba roto). */
+@supports (height: 100dvh) {
+  :root { --stage-w: min(94vw, 1240px, calc(88dvh * (1240 / 760))); }
+}
+
 /* La escena vive en un solo viewport: nada debe generar scroll (la hoja que
    gira sobresale del libro a propósito y no tiene que disparar scrollbars). */
-html { scroll-behavior: smooth; overflow: hidden; }
+html {
+  scroll-behavior: smooth;
+  overflow: hidden;
+  /* En celular: sin pull-to-refresh (recargaba la página al arrastrar hacia
+     abajo) y sin zoom por doble tap / pinch, que rompían la escena fija. */
+  overscroll-behavior: none;
+  touch-action: pan-x pan-y;
+}
 
 body {
   font-family: 'Archivo', sans-serif;
@@ -36,7 +49,10 @@ body {
     linear-gradient(115deg, #191310 0%, #120d0a 48%, #0a0706 100%);
   color: var(--cream);
   min-height: 100vh;
+  min-height: 100dvh; /* sigue a la barra de URL del celular sin saltos */
   overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: pan-x pan-y;
 }
 
 /* Grano de la superficie */
@@ -85,6 +101,7 @@ body::after {
   position: relative;
   z-index: 1;
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -895,7 +912,7 @@ body.is-table .book::after  { opacity: 1; }
 @media (max-width: 768px) and (orientation: portrait) {
   :root { --book-scale: 1; } /* en el celu no sobra pantalla: lectura a tamaño completo */
   .mag { padding: 12px 8px; }
-  .book__stage { width: 96vw; height: 86vh; }
+  .book__stage { width: 96vw; height: 86vh; height: 86dvh; }
 
   .ctrl--prev, .ctrl--next { width: 52px; height: 52px; font-size: 22px; }
   .ctrl--prev { left: 10px; }
