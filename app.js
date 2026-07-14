@@ -86,7 +86,7 @@ const sections = [
     ],
   },
   {
-    id: 'ficciones', label: 'Ficciones · Cortometrajes', nav: 'Ficciones', accent: '#8ab0a4',
+    id: 'ficciones', label: 'Ficciones · Cortos', nav: 'Ficciones', accent: '#8ab0a4',
     desc: 'Ficción y documental: arte, cámara e iluminación.',
     works: [
       { title: 'Acumuladores', meta: 'Documental · Producción y Cámara',
@@ -352,12 +352,27 @@ function layout() {
   pages.forEach((page, i) => {
     page.classList.toggle('is-flipped', i < cur);
     page.style.zIndex = (i < cur) ? i : (pages.length - i);
-    page.style.visibility = ''; // limpia el override inline de giros (aun interrumpidos)
   });
+  pageBaseStyles();
   document.getElementById('book').classList.toggle('is-closed', cur === 0);
   loadNear();
   updateChrome();
   updateTopnav();
+}
+
+// Las hojas ya pasadas cercanas se mantienen pintadas (visibles pero con
+// opacidad 0 y sin recibir taps): si quedaran visibility:hidden el compositor
+// descarta su textura y el giro hacia atrás arrancaba rasterizando la hoja
+// entera en el primer frame — por eso se sentía trabado. Hacia adelante nunca
+// pasó porque la hoja que gira es la página actual, ya pintada.
+function pageBaseStyles() {
+  pages.forEach((p, i) => {
+    const warm = i < cur && i >= cur - BG_BEHIND;
+    p.style.visibility    = warm ? 'visible' : ''; // pisa el hidden de .is-flipped
+    p.style.opacity       = warm ? '0' : '';
+    p.style.willChange    = warm ? 'transform' : '';
+    p.style.pointerEvents = warm ? 'none' : '';
+  });
 }
 
 // ── Carga diferida de fondos (clave para no saturar la memoria en celular) ──
@@ -440,8 +455,9 @@ let activeFlips = [];
 function settleFlips() {
   activeFlips.forEach(a => { try { a.cancel(); } catch (e) {} });
   activeFlips = [];
-  // limpia los overrides del giro (aun si quedó a mitad de camino)
-  pages.forEach(p => { p.style.visibility = ''; p.style.willChange = ''; });
+  // Limpia los overrides del giro (aun si quedó a mitad de camino) y re-aplica
+  // el precalentado de hojas cercanas según el estado actual.
+  pageBaseStyles();
 }
 
 // Sólo transform + opacity: ambas corren en el compositor. Meter `visibility`

@@ -793,6 +793,7 @@ body.is-table .book::after  { opacity: 1; }
 }
 .work__close {
   flex-shrink: 0;
+  white-space: nowrap; /* la ✕ no baja de renglón */
   background: rgba(18,16,14,0.85);
   border: 1px solid var(--line);
   color: var(--cream);
@@ -915,7 +916,10 @@ body.is-table .book::after  { opacity: 1; }
 @media (max-width: 768px) and (orientation: portrait) {
   :root { --book-scale: 1; } /* en el celu no sobra pantalla: lectura a tamaño completo */
   .mag { padding: 12px 8px; }
-  .book__stage { width: 96vw; height: 86vh; height: 86dvh; }
+  /* 80dvh (antes 86): deja aire arriba para el navbar y abajo para el botón
+     "Dejar en la mesa" — con 86 la revista tocaba a ambos. El min() garantiza
+     ese aire (~85px por lado) también en pantallas bajas. */
+  .book__stage { width: 96vw; height: 80vh; height: min(80dvh, calc(100dvh - 170px)); }
 
   .ctrl--prev, .ctrl--next { width: 52px; height: 52px; font-size: 22px; }
   .ctrl--prev { left: 10px; }
