@@ -1001,6 +1001,14 @@ body.is-table .book::after  { opacity: 1; }
   .lightbox__prev { left: 8px; font-size: 22px; }
   .lightbox__next { right: 8px; font-size: 22px; }
   .lightbox__close { top: 16px; right: 16px; }
+
+  /* Contacto: en el celu la página es ~1/3 del ancho de PC — los botones
+     con px fijos de desktop desbordaban. */
+  .thanks__socials { margin-top: 18px; gap: 8px 16px; flex-wrap: wrap; }
+  .thanks__socials a { font-size: 11px; letter-spacing: 0.14em; gap: 6px; padding: 2px 0; }
+  .thanks__socials a svg { width: 14px; height: 14px; }
+  .thanks__muna { margin-top: 28px; font-size: 10px; letter-spacing: 0.18em; gap: 9px; }
+  .thanks__muna svg { width: 28px; }
 }
 
 @media (max-width: 460px) {
