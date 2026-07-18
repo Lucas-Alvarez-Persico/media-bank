@@ -124,6 +124,10 @@ body.is-table .book {
 /* En la mesa, la revista entera es un solo botón: acercarse. */
 body.is-table .book * { pointer-events: none; }
 
+/* Con una hoja en el aire las páginas no reciben clicks: un click a mitad de
+   giro caía en la hoja vieja y abría su galería. */
+.book.is-flipping .page { pointer-events: none; }
+
 .mag__hint {
   position: absolute;
   bottom: 6vh; left: 50%;

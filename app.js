@@ -656,15 +656,22 @@ function flipTo(target) {
     ));
   }
 
+  // Con la hoja en el aire, las páginas no reciben clicks: un click a mitad
+  // de giro abría la galería de la página vieja. Las flechas y el swipe viven
+  // fuera de las hojas, así que igual se puede seguir pasando rápido.
+  const book = document.getElementById('book');
+  book.classList.add('is-flipping');
+
   // Al terminar el giro, reconcilia el estado y libera memoria de páginas lejanas.
   reconcileTimer = setTimeout(() => {
     settleFlips();
     moving.style.willChange = '';
+    book.classList.remove('is-flipping');
     layout();
     unloadFar();
   }, FLIP_MS + 60);
 
-  document.getElementById('book').classList.toggle('is-closed', cur === 0);
+  book.classList.toggle('is-closed', cur === 0);
   updateChrome();
   updateTopnav();
 }
