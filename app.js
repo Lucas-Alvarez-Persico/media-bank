@@ -28,6 +28,32 @@ const francoItems = photos('franco-ladran-sancho', [
   'f0a2c1244794795.699f38d5b9922.webp', 'f1061c244794795.699f38d5b352e.webp',
 ], 'Franco Martínez', 'En vivo · Ladran Sancho');
 
+const tangenteItems = photos('franco-la-tangente', [
+  'DSC05202.jpg', 'DSC05217.jpg', 'DSC05221.jpg', 'DSC05228.jpg',
+  'DSC05232.jpg', 'DSC05236.jpg', 'DSC05242.jpg', 'DSC05244.jpg',
+  'DSC05252.jpg', 'DSC05275.jpg', 'DSC05277.jpg', 'DSC05283.jpg',
+  'DSC05285.jpg', 'DSC05291.jpg', 'DSC05294.jpg', 'DSC05305.jpg',
+  'DSC05306.jpg', 'DSC05308.jpg', 'DSC05314.jpg', 'DSC05335.jpg',
+  'DSC05347.jpg', 'DSC05351.jpg', 'DSC05352.jpg', 'DSC05362.jpg',
+  'DSC05363.jpg', 'DSC05364.jpg', 'DSC05365.jpg', 'DSC05368.jpg',
+  'DSC05381.jpg', 'DSC05384.jpg', 'DSC05499.jpg', 'DSC05517.jpg',
+  'DSC05519.jpg', 'DSC05524.jpg', 'DSC05525.jpg', 'DSC05526.jpg',
+  'DSC05543.jpg', 'DSC05554.jpg', 'DSC05581.jpg', 'DSC05595.jpg',
+  'DSC05597.jpg', 'DSC05617.jpg', 'DSC05623.jpg', 'DSC05633.jpg',
+  'DSC05641.jpg', 'DSC05644.jpg', 'DSC05651.jpg', 'DSC05652.jpg',
+  'DSC05662.jpg', 'DSC05677.jpg', 'DSC05680.jpg', 'DSC05705.jpg',
+  'DSC05738.jpg', 'DSC05745.jpg', 'DSC05746.jpg', 'DSC05759.jpg',
+  'DSC05762.jpg', 'DSC05770.jpg', 'DSC05779.jpg', 'DSC05784.jpg',
+  'DSC05786.jpg', 'DSC05787.jpg', 'DSC05796.jpg', 'DSC05812.jpg',
+  'DSC05817.jpg', 'DSC05821.jpg', 'DSC05841-2.jpg', 'DSC05844.jpg',
+  'DSC05846.jpg', 'DSC05887.jpg', 'DSC05898.jpg', 'DSC05899.jpg',
+  'DSC05910.jpg', 'DSC05912.jpg', 'DSC05921.jpg', 'DSC05923.jpg',
+  'DSC05931.jpg', 'DSC05950.jpg', 'DSC05953.jpg', 'DSC05961.jpg',
+  'DSC05969-2.jpg', 'DSC05971.jpg', 'DSC05973.jpg', 'DSC05975.jpg',
+  'DSC05993.jpg', 'DSC06005-2.jpg', 'DSC06010-2.jpg', 'DSC06035.jpg',
+  'DSC06040.jpg', 'DSC06046.jpg', 'DSC06060.jpg',
+], 'Franco Martínez', 'En vivo · La Tangente');
+
 const luchiItems = photos('luchi-davit', [
   '6adfdf233853197.68b7c3d0b9f95.webp', '8c54bd233853197.68b7c3d0bc356.webp',
   '9ef3d6233853197.68b7c3d0bbdb8.webp', 'b1b9fc233853197.68b7c3d0bdb96.webp',
@@ -37,6 +63,29 @@ const luchiItems = photos('luchi-davit', [
   'f3a89c233853197.68b7c3d0c15ad.webp', 'f5b11b233853197.68b7c3d0c1fa2.webp',
   'f5f30f233853197.68b7c3d0c2e8d.webp',
 ], 'Luchi Davit', 'En vivo · The Monkey\'s');
+
+// Video local del proyecto (mp4 comprimido a web — los originales pesan
+// >100MB y GitHub los rechaza). Se muestra en el mural con su poster (cuadro
+// extraído con ffmpeg, ya que el primer segundo de varias piezas es una placa)
+// y se expande en el lightbox al clickearlo.
+const clip = (file, title) => ({
+  type: 'video',
+  src: `fotos/hospital-universitario-austral/${file}`,
+  poster: `fotos/hospital-universitario-austral/posters/${file.replace(/\.mp4$/, '.jpg')}`,
+  title,
+  meta: 'Hospital Universitario Austral',
+});
+
+const hospitalItems = [
+  video('6G79yq3th1g', 'SaNar: salidas a la naturaleza', 'Hospital Universitario Austral'),
+  clip('que-hay-en-mi-mochila-pediatria.mp4', '¿Qué hay en mi mochila? (Pediatría)'),
+  clip('que-hay-en-mi-mochila-emergentologia.mp4', '¿Qué hay en mi mochila? (Emergentología)'),
+  clip('fe-no-se-dice-terminos-medicos.mp4', 'No se dice… (Términos médicos)'),
+  clip('fe-5-razones-para-elegir-kinesiologia.mp4', '5 razones para elegir Kinesiología'),
+  clip('veni-a-conocer-hemoterapia.mp4', 'Vení a conocer… (Hemoterapia)'),
+  clip('servicios-en-2-min-vertical.mp4', 'Servicios en 2 minutos'),
+  clip('sanar-pacientes-ucia-en-naturaleza-vertical.mp4', 'SaNar (versión vertical)'),
+];
 
 const comandanteItems = photos('el-comandante', [
   '2ee3bc238195039.690ff9183a1a1.webp', '38dae9238195039.690ff91839978.webp',
@@ -80,6 +129,9 @@ const sections = [
       { title: 'Franco Martínez', meta: 'En vivo · Ladran Sancho',
         desc: 'Cobertura fotográfica del show en Ladran Sancho. Registro en vivo de la puesta, los gestos y el público.',
         items: francoItems },
+      { title: 'Fran Martínez', meta: 'En vivo · La Tangente',
+        desc: 'Cobertura fotográfica del show en La Tangente. Registro en vivo del escenario, la luz y el público.',
+        items: tangenteItems },
       { title: 'Luchi Davit', meta: 'En vivo · The Monkey\'s',
         desc: 'Cobertura del show en The Monkey\'s. Fotografía de escenario en clave de luz baja y color.',
         items: luchiItems },
@@ -104,15 +156,16 @@ const sections = [
     id: 'instituciones', label: 'Instituciones', nav: 'Instituciones', accent: '#8aa6c9',
     desc: 'Contenido audiovisual para instituciones.',
     works: [
-      { title: 'Hospital Universitario Austral', meta: 'SaNar · Edición de video',
-        desc: 'Pieza institucional «SaNar: salidas a la naturaleza». Edición de video para el Hospital Universitario Austral.',
-        items: [video('6G79yq3th1g', 'Hospital Universitario Austral', 'SaNar')] },
+      { title: 'Hospital Universitario Austral', meta: 'Contenido institucional · Edición de video',
+        desc: 'Piezas para el Hospital Universitario Austral: «SaNar: salidas a la naturaleza» y contenido para redes. Edición de video.',
+        variant: 'splitL', // tapa del video a la izquierda, texto a la derecha
+        items: hospitalItems },
     ],
   },
 ];
 
 // Imagen atmosférica para la página "Sobre mí"
-const aboutBg = 'fotos/luchi-davit/thumbs/bc8dee233853197.68b7c3d0bf343.webp';
+const aboutBg = 'about.jpg';
 
 // ── Construcción del orden de páginas ───────────────────────────────────────
 const VARIANTS = ['full', 'splitR', 'editorial', 'splitL'];
@@ -134,7 +187,8 @@ sections.forEach(sec => {
   sec.works.forEach(work => {
     work.section = sec;
     const imgCount = work.items.filter(it => it.type === 'image').length;
-    work.variant = imgCount >= 5 ? 'collage' : VARIANTS[workNo % VARIANTS.length];
+    // Un work puede fijar su variante en los datos; si no, se asigna sola.
+    work.variant = work.variant || (imgCount >= 5 ? 'collage' : VARIANTS[workNo % VARIANTS.length]);
     work.no = pad(++workNo);
     pageDefs.push({ type: 'work', section: sec, work });
   });
@@ -296,9 +350,9 @@ function frontHTML(def, i) {
           <div class="thanks__contact">
             <a class="thanks__email" href="mailto:hola@martinalopezparafita.com">hola@martinalopezparafita.com</a>
             <div class="thanks__socials">
-              <a href="#" target="_blank" rel="noopener">Instagram</a>
-              <a href="#" target="_blank" rel="noopener">Behance</a>
-              <a href="#" target="_blank" rel="noopener">LinkedIn</a>
+              <a href="https://www.instagram.com/martulopezp/" target="_blank" rel="noopener">Instagram</a>
+              <a href="https://www.behance.net/martulopezp" target="_blank" rel="noopener">Behance</a>
+              <a href="https://www.linkedin.com/in/martinal%C3%B3pezparafita/" target="_blank" rel="noopener">LinkedIn</a>
             </div>
           </div>
           <span class="pg__foot">&copy; 2025 Martina López Parafita</span>
@@ -322,14 +376,11 @@ function attachPageHandlers(front, def) {
       item.addEventListener('click', () => goToPage(parseInt(item.dataset.target)));
     });
   } else if (def.type === 'work' && def.work) {
-    if (isVideoWork(def.work)) {
-      // Sólo la tapa del video (miniatura + play) abre el reproductor.
-      front.querySelectorAll('.work-bg, .work-img, .media-play').forEach(el => {
-        el.addEventListener('click', (e) => { e.stopPropagation(); openWork(def.work); });
-      });
-    } else {
-      front.addEventListener('click', () => openWork(def.work));
-    }
+    // Sólo la imagen / preview del video, el collage y el CTA "Ver galería"
+    // abren el despliegue — no cualquier punto de la página.
+    front.querySelectorAll('.work-bg, .work-img, .collage__cell, .media-play, .work-cta').forEach(el => {
+      el.addEventListener('click', (e) => { e.stopPropagation(); openWork(def.work); });
+    });
   }
 }
 
@@ -349,10 +400,7 @@ function buildBook() {
 }
 
 function layout() {
-  pages.forEach((page, i) => {
-    page.classList.toggle('is-flipped', i < cur);
-    page.style.zIndex = (i < cur) ? i : (pages.length - i);
-  });
+  pages.forEach((page, i) => page.classList.toggle('is-flipped', i < cur));
   pageBaseStyles();
   document.getElementById('book').classList.toggle('is-closed', cur === 0);
   loadNear();
@@ -372,6 +420,11 @@ function pageBaseStyles() {
     p.style.opacity       = warm ? '0' : '';
     p.style.willChange    = warm ? 'transform' : '';
     p.style.pointerEvents = warm ? 'none' : '';
+    // Restablece también el z-index inflado de la hoja que estaba girando:
+    // si quedara en pages.length+5, la hoja del PRÓXIMO giro (mismo z-index)
+    // empata y pierde por orden del DOM — el giro hacia atrás interrumpido
+    // por otro se veía animarse "por detrás" de la página actual.
+    p.style.zIndex = (i < cur) ? i : (pages.length - i);
   });
 }
 
@@ -390,6 +443,11 @@ function loadNear() {
       const img = new Image();
       const apply = () => {
         if (Math.abs(i - cur) > Math.max(BG_BEHIND, BG_AHEAD)) return; // ya quedó lejos
+        // Con una hoja en el aire, sólo se pinta la página destino: asignar
+        // fondos de páginas vecinas en pleno giro rasteriza a mitad de vuelo
+        // y la animación avanza a tirones (el reconcile re-llama a loadNear
+        // al aterrizar y ahí se pintan, ya con la imagen decodificada).
+        if (activeFlips.length && i !== cur) return;
         el.style.backgroundImage = el.dataset.bg;
       };
       img.src = src;
@@ -460,32 +518,32 @@ function settleFlips() {
   pageBaseStyles();
 }
 
-// Sólo transform + opacity: ambas corren en el compositor. Meter `visibility`
-// acá bajaba la animación al hilo principal y se sentía trabada; la visibilidad
-// de la hoja se maneja con un estilo inline durante el giro.
+// Sólo transform + opacity: ambas corren en el compositor.
+// La rotación es EXACTAMENTE proporcional al offset y una única curva global
+// (el `easing` de options, que en WAAPI modula la animación entera) le da la
+// aceleración: antes cada tramo tenía su propio cubic-bezier y las velocidades
+// no empalmaban en los bordes de los keyframes — la hoja frenaba y re-arrancaba
+// y el giro se veía "a pasos" aun corriendo a 60fps.
+const FLIP_EASE = 'cubic-bezier(0.5, 0.06, 0.2, 1)';
 function flipKeyframes(dir) {
-  if (dir > 0) return [
-    { opacity: 1, transform: 'rotateY(0deg) translateZ(0px) skewY(0deg)',
-      offset: 0, easing: 'cubic-bezier(0.55, 0.05, 0.55, 0.55)' },
-    { opacity: 1, transform: `rotateY(-50deg) translateZ(${FLIP_LIFT * 0.7}px) skewY(1.4deg)`,
-      offset: 0.32, easing: 'cubic-bezier(0.35, 0.3, 0.4, 0.75)' },
-    { opacity: 1, transform: `rotateY(-96deg) translateZ(${FLIP_LIFT}px) skewY(2.2deg)`,
-      offset: 0.54, easing: 'cubic-bezier(0.3, 0.35, 0.35, 1)' },
-    { opacity: 0.85, transform: `rotateY(-152deg) translateZ(${FLIP_LIFT * 0.35}px) skewY(0.8deg)`,
-      offset: 0.82, easing: 'ease-out' },
-    { opacity: 0, transform: 'rotateY(-180deg) translateZ(0px) skewY(0deg)', offset: 1 },
-  ];
-  return [
-    { opacity: 0, transform: 'rotateY(-180deg) translateZ(0px) skewY(0deg)',
-      offset: 0, easing: 'cubic-bezier(0.55, 0.05, 0.55, 0.55)' },
-    { opacity: 1, transform: `rotateY(-148deg) translateZ(${FLIP_LIFT * 0.4}px) skewY(-0.8deg)`,
-      offset: 0.16, easing: 'cubic-bezier(0.35, 0.3, 0.4, 0.75)' },
-    { opacity: 1, transform: `rotateY(-84deg) translateZ(${FLIP_LIFT}px) skewY(-2.2deg)`,
-      offset: 0.5, easing: 'cubic-bezier(0.3, 0.35, 0.35, 1)' },
-    { opacity: 1, transform: `rotateY(-26deg) translateZ(${FLIP_LIFT * 0.35}px) skewY(-1deg)`,
-      offset: 0.82, easing: 'ease-out' },
-    { opacity: 1, transform: 'rotateY(0deg) translateZ(0px) skewY(0deg)', offset: 1 },
-  ];
+  const N = 8, frames = [];
+  for (let k = 0; k <= N; k++) {
+    const p    = k / N;
+    const ang  = dir > 0 ? -180 * p : -180 * (1 - p);
+    const arc  = Math.sin(Math.PI * p);      // campana: alza y comba máximas a mitad de giro
+    const lift = FLIP_LIFT * arc;
+    const skew = 2.2 * arc * (dir > 0 ? 1 : -1);
+    // Se desvanece al reposar (adelante) o aparece al despegar (atrás).
+    const op = dir > 0
+      ? (p < 0.72 ? 1 : (1 - p) / 0.28)
+      : Math.min(1, p / 0.14);
+    frames.push({
+      offset: p,
+      opacity: op,
+      transform: `rotateY(${ang.toFixed(2)}deg) translateZ(${lift.toFixed(2)}px) skewY(${skew.toFixed(3)}deg)`,
+    });
+  }
+  return frames;
 }
 
 // Pasa a `target` con UN solo paso de hoja, aunque haya páginas en el medio
@@ -518,7 +576,7 @@ function flipTo(target) {
   moving.style.visibility = 'visible'; // pisa el hidden de .is-flipped mientras gira
   moving.style.willChange = 'transform, opacity';
 
-  activeFlips.push(moving.animate(flipKeyframes(dir), { duration: FLIP_MS, fill: 'forwards' }));
+  activeFlips.push(moving.animate(flipKeyframes(dir), { duration: FLIP_MS, easing: FLIP_EASE, fill: 'forwards' }));
 
   // Luz que barre la hoja mientras gira.
   const shade = moving.querySelector('.page__shade');
@@ -587,6 +645,14 @@ function tileMarkup(item) {
       <button class="masonry__play" aria-label="Reproducir ${label}">${playSVG}</button>
       <div class="masonry__overlay"><span class="masonry__caption">${label}</span>${meta}</div>`;
   }
+  if (item.type === 'video') {
+    // El poster evita bajar video en el mural (preload=none): el mp4 recién
+    // se pide al expandirlo en el lightbox.
+    return `
+      <div class="masonry__media masonry__media--clip"><video src="${item.src}" poster="${item.poster}" preload="none" muted playsinline disablepictureinpicture></video></div>
+      <button class="masonry__play" aria-label="Reproducir ${label}">${playSVG}</button>
+      <div class="masonry__overlay"><span class="masonry__caption">${label}</span>${meta}</div>`;
+  }
   return `
     <img src="${item.thumb || item.src}" alt="${label}" loading="lazy" decoding="async" />
     <div class="masonry__overlay"><span class="masonry__caption">${label}</span>${meta}</div>`;
@@ -620,7 +686,7 @@ function openWork(work) {
     grid.className = 'masonry';
     work.items.forEach((item, i) => {
       const el = document.createElement('div');
-      el.className = 'masonry__item' + (item.type === 'youtube' ? ' masonry__item--video' : '');
+      el.className = 'masonry__item' + (item.type === 'youtube' || item.type === 'video' ? ' masonry__item--video' : '');
       el.style.animationDelay = (i * 0.04) + 's';
       el.innerHTML = tileMarkup(item);
       el.addEventListener('click', () => openLightbox(i));
@@ -679,6 +745,8 @@ function renderLightbox() {
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowfullscreen></iframe>
       </div>`;
+  } else if (item.type === 'video') {
+    media.innerHTML = `<video class="lightbox__clip" src="${item.src}" controls autoplay playsinline></video>`;
   } else {
     media.innerHTML = `<img src="${item.src}" alt="${label}" decoding="async" />`;
   }

@@ -11,13 +11,13 @@ El lightbox sigue usando la resolución original.
 import glob
 import os
 
-from PIL import Image
+from PIL import Image, ImageOps
 
 MAX_SIDE = 1000
 QUALITY = 80
 
 total_in = total_out = count = 0
-for src in glob.glob('fotos/*/*.webp'):
+for src in sorted(glob.glob('fotos/*/*.webp') + glob.glob('fotos/*/*.jpg')):
     d, name = os.path.split(src)
     if os.path.basename(d) == 'thumbs':
         continue
@@ -27,8 +27,12 @@ for src in glob.glob('fotos/*/*.webp'):
     if os.path.exists(dst) and os.path.getmtime(dst) >= os.path.getmtime(src):
         continue
     im = Image.open(src)
+    im = ImageOps.exif_transpose(im)  # respeta la orientación EXIF de la cámara
     im.thumbnail((MAX_SIDE, MAX_SIDE), Image.LANCZOS)
-    im.save(dst, 'WEBP', quality=QUALITY, method=6)
+    if name.lower().endswith('.webp'):
+        im.save(dst, 'WEBP', quality=QUALITY, method=6)
+    else:
+        im.save(dst, 'JPEG', quality=QUALITY, optimize=True, progressive=True)
     total_in += os.path.getsize(src)
     total_out += os.path.getsize(dst)
     count += 1
