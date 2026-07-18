@@ -6,6 +6,24 @@
 
 const ytThumb = (id) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
 
+// Miniatura en alta (1280x720, 16:9 sin bandas negras). No todos los videos
+// la tienen: para esos, YouTube devuelve un placeholder de 120x90 (no un 404),
+// así que el fallback se detecta por dimensiones. Dos videos del portfolio no
+// tienen maxres en YouTube y usan una copia local recortada (sin letterbox).
+const YT_LOCAL = {
+  '2W9xCTxiQk8': 'fotos/yt-thumbs/2W9xCTxiQk8.jpg',
+  '6G79yq3th1g': 'fotos/yt-thumbs/6G79yq3th1g.jpg',
+};
+const ytThumbHD = (id) => YT_LOCAL[id] || `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`;
+
+// Si la HD vino como placeholder (o falló), cae a la miniatura estándar.
+function fixYtImg(img) {
+  const id = img.dataset.yt;
+  const check = () => { if (img.naturalWidth && img.naturalWidth < 320) img.src = ytThumb(id); };
+  if (img.complete) check(); else img.addEventListener('load', check, { once: true });
+  img.addEventListener('error', () => { img.src = ytThumb(id); }, { once: true });
+}
+
 const video  = (id, title, meta) => ({ type: 'youtube', id, title, meta });
 // `thumb` (máx. 1000px, generada con scripts/make_thumbs.py) es lo que pinta la
 // revista y la grilla; `src` (original, ~6MB c/u) queda sólo para el lightbox.
@@ -208,11 +226,14 @@ let zoomed  = false; // false: la revista descansa sobre la mesa
 // ════════════════════════════════════════════════════════════════════════════
 //  PLANTILLAS DE PÁGINA
 // ════════════════════════════════════════════════════════════════════════════
-function workCover(work) {
+// Atributos data-bg del fondo de tapa de un work (los consume loadNear).
+// Para videos: miniatura HD con fallback a la estándar si no existe.
+function workCoverAttrs(work) {
   const img = work.items.find(it => it.type === 'image');
-  if (img) return img.thumb || img.src;
+  if (img) return `data-bg="url('${img.thumb || img.src}')"`;
   const vid = work.items.find(it => it.type === 'youtube');
-  return vid ? ytThumb(vid.id) : '';
+  if (!vid) return 'data-bg=""';
+  return `data-bg="url('${ytThumbHD(vid.id)}')" data-bg-fallback="url('${ytThumb(vid.id)}')"`;
 }
 const isVideoWork = (work) => work.items.length === 1 && work.items[0].type === 'youtube';
 const playSVG = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`;
@@ -239,7 +260,7 @@ function workHTML(def) {
   if (w.variant === 'full') {
     return `
       <div class="pg pg--work v-full${vid}" style="--accent:${acc}">
-        <div class="work-bg lazy-bg" data-bg="url('${workCover(w)}')"></div>
+        <div class="work-bg lazy-bg" ${workCoverAttrs(w)}></div>
         <div class="work-bg__grad"></div>
         <span class="work-no display">${w.no}</span>
         ${play}
@@ -248,7 +269,7 @@ function workHTML(def) {
   }
 
   if (w.variant === 'splitR' || w.variant === 'splitL') {
-    const imgCol  = `<div class="work-img lazy-bg" data-bg="url('${workCover(w)}')">${play}</div>`;
+    const imgCol  = `<div class="work-img lazy-bg" ${workCoverAttrs(w)}>${play}</div>`;
     const textCol = `<div class="work-col"><span class="work-no display">${w.no}</span>${workInfoHTML(def)}</div>`;
     const order   = w.variant === 'splitR' ? textCol + imgCol : imgCol + textCol;
     return `<div class="pg pg--work v-split v-${w.variant}${vid}" style="--accent:${acc}">${order}</div>`;
@@ -258,7 +279,7 @@ function workHTML(def) {
     return `
       <div class="pg pg--work v-editorial${vid}" style="--accent:${acc}">
         <span class="work-no--ghost display">${w.no}</span>
-        <div class="work-frame"><div class="work-img lazy-bg" data-bg="url('${workCover(w)}')">${play}</div></div>
+        <div class="work-frame"><div class="work-img lazy-bg" ${workCoverAttrs(w)}>${play}</div></div>
         <div class="work-col">${workInfoHTML(def)}</div>
       </div>`;
   }
@@ -325,7 +346,7 @@ function frontHTML(def, i) {
     case 'divider': {
       const sec = def.section;
       const thumbs = sec.works.slice(0, 3).map(w =>
-        `<div class="divider__thumb lazy-bg" data-bg="url('${workCover(w)}')"></div>`).join('');
+        `<div class="divider__thumb lazy-bg" ${workCoverAttrs(w)}></div>`).join('');
       return `
         <div class="pg pg--divider" style="--accent:${sec.accent}">
           <span class="divider__num display">${pad(def.no)}</span>
@@ -348,12 +369,25 @@ function frontHTML(def, i) {
           <div class="pg__bar"><span>Contacto</span><span>Fin</span></div>
           <h2 class="thanks-title display">GRACIAS.</h2>
           <div class="thanks__contact">
-            <a class="thanks__email" href="mailto:hola@martinalopezparafita.com">hola@martinalopezparafita.com</a>
+            <a class="thanks__email" href="mailto:martulopezp@gmail.com">martulopezp@gmail.com</a>
             <div class="thanks__socials">
-              <a href="https://www.instagram.com/martulopezp/" target="_blank" rel="noopener">Instagram</a>
-              <a href="https://www.behance.net/martulopezp" target="_blank" rel="noopener">Behance</a>
-              <a href="https://www.linkedin.com/in/martinal%C3%B3pezparafita/" target="_blank" rel="noopener">LinkedIn</a>
+              <a href="https://www.instagram.com/martulopezp/" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5.2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.35" cy="6.65" r="1.3" fill="currentColor"/></svg>
+                Instagram</a>
+              <a href="https://www.behance.net/martulopezp" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.3 V18.7 M3 5.3 H7.6 A3.15 3.15 0 0 1 7.6 11.6 H3 M3 11.6 H8.2 A3.55 3.55 0 0 1 8.2 18.7 H3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="17.3" cy="14.2" r="3.9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.45 13.6 H21.15 M14.8 6.9 H19.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                Behance</a>
+              <a href="https://www.linkedin.com/in/martinal%C3%B3pezparafita/" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="7.5" cy="7.7" r="1.2" fill="currentColor"/><path d="M7.5 10.9 V17.2 M11.4 17.2 V10.9 M11.4 13.6 C11.4 10.8 16.6 10.8 16.6 13.6 V17.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                LinkedIn</a>
             </div>
+            <a class="thanks__muna" href="https://www.instagram.com/munafilms__/" target="_blank" rel="noopener">
+              <svg viewBox="0 0 122 72" aria-hidden="true">
+                <path d="M14 56 L14 24 M14 36 Q14 23 26 23 Q38 23 38 36 L38 56 M38 36 Q38 23 50 23 Q62 23 62 36 L62 56 M82 56 L82 23 L106 23 M82 39 L99 39"
+                      fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span>Muna Films</span>
+            </a>
           </div>
           <span class="pg__foot">&copy; 2025 Martina López Parafita</span>
         </div>`;
@@ -436,26 +470,49 @@ function loadNear() {
   for (let i = lo; i <= hi; i++) {
     pages[i].querySelectorAll('.lazy-bg').forEach(el => {
       if (!el.dataset.bg || el.style.backgroundImage === el.dataset.bg) return;
-      // Decodifica fuera del hilo principal antes de pintar: asignar el
-      // background directo decodificaba el webp en el mismo frame en que
-      // arranca el giro y se sentía un tirón.
-      const src = el.dataset.bg.slice(5, -2); // url('…') → …
-      const img = new Image();
-      const apply = () => {
-        if (Math.abs(i - cur) > Math.max(BG_BEHIND, BG_AHEAD)) return; // ya quedó lejos
-        // Con una hoja en el aire, sólo se pinta la página destino: asignar
-        // fondos de páginas vecinas en pleno giro rasteriza a mitad de vuelo
-        // y la animación avanza a tirones (el reconcile re-llama a loadNear
-        // al aterrizar y ahí se pintan, ya con la imagen decodificada).
-        if (activeFlips.length && i !== cur) return;
-        el.style.backgroundImage = el.dataset.bg;
-      };
-      img.src = src;
-      if (img.decode) img.decode().then(apply).catch(apply);
-      else if (img.complete) apply();
-      else img.onload = apply;
+      loadBg(el, i);
     });
   }
+}
+
+// Carga el fondo de `el` (página i) decodificando fuera del hilo principal
+// antes de pintar (asignar el background directo decodificaba en el mismo
+// frame en que arranca el giro y se sentía un tirón). Si la imagen falla o
+// YouTube devuelve su placeholder de 120x90 (miniatura HD inexistente),
+// reintenta con data-bg-fallback.
+function loadBg(el, i) {
+  const src = el.dataset.bg.slice(5, -2); // url('…') → …
+  const img = new Image();
+  const fallback = () => {
+    if (!el.dataset.bgFallback) return;
+    el.dataset.bg = el.dataset.bgFallback;
+    el.removeAttribute('data-bg-fallback');
+    loadBg(el, i);
+  };
+  img.onerror = fallback;
+  img.onload = () => {
+    if (img.naturalWidth && img.naturalWidth < 320) return fallback(); // placeholder
+    const apply = () => {
+      if (Math.abs(i - cur) > Math.max(BG_BEHIND, BG_AHEAD)) return; // ya quedó lejos
+      // Con una hoja en el aire, sólo se pinta la página destino: asignar
+      // fondos de páginas vecinas en pleno giro rasteriza a mitad de vuelo
+      // y la animación avanza a tirones (el reconcile re-llama a loadNear
+      // al aterrizar y ahí se pintan, ya con la imagen decodificada).
+      if (activeFlips.length && i !== cur) return;
+      el.style.backgroundImage = el.dataset.bg;
+    };
+    // decode() queda en cola si la pestaña está oculta (Chrome pospone la
+    // decodificación): el timeout aplica igual — total, sin pestaña visible
+    // no se pinta nada y el decode ocurre recién al mostrarse.
+    let applied = false;
+    const applyOnce = () => { if (!applied) { applied = true; apply(); } };
+    if (img.decode) {
+      img.decode().then(applyOnce).catch(applyOnce);
+      setTimeout(applyOnce, 400);
+    } else applyOnce();
+  };
+  img.src = src;
+  if (img.complete) { if (img.naturalWidth === 0) fallback(); else img.onload(); }
 }
 function unloadFar() {
   const lo = Math.max(0, cur - BG_BEHIND);
@@ -641,7 +698,7 @@ function tileMarkup(item) {
   const meta  = item.meta ? `<span class="masonry__meta">${item.meta}</span>` : '';
   if (item.type === 'youtube') {
     return `
-      <div class="masonry__media"><img src="${ytThumb(item.id)}" alt="${label}" loading="lazy" decoding="async" /></div>
+      <div class="masonry__media"><img src="${ytThumbHD(item.id)}" data-yt="${item.id}" alt="${label}" loading="lazy" decoding="async" /></div>
       <button class="masonry__play" aria-label="Reproducir ${label}">${playSVG}</button>
       <div class="masonry__overlay"><span class="masonry__caption">${label}</span>${meta}</div>`;
   }
@@ -689,6 +746,8 @@ function openWork(work) {
       el.className = 'masonry__item' + (item.type === 'youtube' || item.type === 'video' ? ' masonry__item--video' : '');
       el.style.animationDelay = (i * 0.04) + 's';
       el.innerHTML = tileMarkup(item);
+      const yt = el.querySelector('img[data-yt]');
+      if (yt) fixYtImg(yt);
       el.addEventListener('click', () => openLightbox(i));
       grid.appendChild(el);
     });
