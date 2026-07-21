@@ -85,14 +85,16 @@ const luchiItems = photos('luchi-davit', [
 // Video local del proyecto (mp4 comprimido a web — los originales pesan
 // >100MB y GitHub los rechaza). Se muestra en el mural con su poster (cuadro
 // extraído con ffmpeg, ya que el primer segundo de varias piezas es una placa)
-// y se expande en el lightbox al clickearlo.
-const clip = (file, title) => ({
+// y se expande en el lightbox al clickearlo. clipMaker fija carpeta y meta.
+const clipMaker = (dir, meta) => (file, title) => ({
   type: 'video',
-  src: `fotos/hospital-universitario-austral/${file}`,
-  poster: `fotos/hospital-universitario-austral/posters/${file.replace(/\.mp4$/, '.jpg')}`,
+  src: `fotos/${dir}/${file}`,
+  poster: `fotos/${dir}/posters/${file.replace(/\.mp4$/, '.jpg')}`,
   title,
-  meta: 'Hospital Universitario Austral',
+  meta,
 });
+const clip = clipMaker('hospital-universitario-austral', 'Hospital Universitario Austral');
+const clipLT = clipMaker('lopez-taibo', 'López Taibo');
 
 const hospitalItems = [
   video('6G79yq3th1g', 'SaNar: salidas a la naturaleza', 'Hospital Universitario Austral'),
@@ -103,6 +105,38 @@ const hospitalItems = [
   clip('veni-a-conocer-hemoterapia.mp4', 'Vení a conocer… (Hemoterapia)'),
   clip('servicios-en-2-min-vertical.mp4', 'Servicios en 2 minutos'),
   clip('sanar-pacientes-ucia-en-naturaleza-vertical.mp4', 'SaNar (versión vertical)'),
+];
+
+// Galería López Taibo — videos locales (comprimidos con el script, poster por
+// clip). Orden según la numeración de los archivos originales.
+const lopezTaiboItems = [
+  clipLT('3-lopeztaibo.mp4', 'López Taibo'),
+  clipLT('1-oxford-lessin.mp4', 'Oxford Lessin'),
+  clipLT('1-lazaro.mp4', 'Lázaro'),
+  clipLT('2-salmo.mp4', 'Salmo'),
+  clipLT('2-stilo.mp4', 'Stilo'),
+  clipLT('3-chelsea-bruno.mp4', 'Chelsea Bruno'),
+  clipLT('4-borcego.mp4', 'Borcego'),
+  clipLT('4-mocasin-lazaro.mp4', 'Mocasín Lázaro'),
+  clipLT('5-romeo.mp4', 'Romeo'),
+  clipLT('6-manuel.mp4', 'Manuel'),
+  clipLT('7-gael-derby.mp4', 'Gael Derby'),
+  clipLT('8-forli.mp4', 'Forli'),
+  clipLT('9-saint-pierre.mp4', 'Saint Pierre'),
+  clipLT('9-weston.mp4', 'Weston'),
+  clipLT('10-forli.mp4', 'Forli II'),
+  clipLT('10-morral-juano.mp4', 'Morral Juano'),
+  clipLT('11-dos-estilos.mp4', 'Dos Estilos'),
+  clipLT('12-torino-napalan.mp4', 'Torino Napalán'),
+  clipLT('1-hay-objetos-que-no-pasan.mp4', 'Hay objetos que no pasan…'),
+  clipLT('1-no-todo-el-cuero-es-igual.mp4', 'No todo el cuero es igual'),
+  clipLT('2-los-legados-invisibles.mp4', 'Los legados invisibles'),
+  clipLT('2-como-saber-si-un-zapato-es-bueno.mp4', 'Cómo saber si un zapato es bueno'),
+  clipLT('3-tipos-de-zapatos.mp4', 'Tipos de zapatos'),
+  clipLT('4-hay-clientes.mp4', 'Hay clientes…'),
+  clipLT('4-talles3.mp4', 'Talles'),
+  clipLT('5-esto-no-es-moda.mp4', 'Esto no es moda'),
+  clipLT('6-el-error-mas-comun.mp4', 'El error más común'),
 ];
 
 const comandanteItems = photos('el-comandante', [
@@ -143,7 +177,14 @@ const sections = [
   {
     id: 'moda', label: 'Moda', nav: 'Moda', accent: '#c98aa6',
     desc: 'Editoriales y campañas de moda.',
-    works: [],
+    works: [
+      // BAFA — sin contenido por ahora: se muestra como "Próximamente".
+      { title: 'BAFA', meta: '', comingSoon: true, items: [] },
+      { title: 'López Taibo', meta: 'Marca de calzado · Contenido audiovisual',
+        desc: 'Contenido audiovisual para López Taibo: presentación de modelos y piezas editoriales sobre el oficio del calzado.',
+        variant: 'full', coverSide: true, cover: 'fotos/lopez-taibo/cover.jpg',
+        items: lopezTaiboItems },
+    ],
   },
   {
     id: 'cobertura-shows', label: 'Cobertura de Shows', nav: 'Cobertura', accent: '#c9b07f',
@@ -234,6 +275,8 @@ let zoomed  = false; // false: la revista descansa sobre la mesa
 // Atributos data-bg del fondo de tapa de un work (los consume loadNear).
 // Para videos: miniatura HD con fallback a la estándar si no existe.
 function workCoverAttrs(work) {
+  // Imagen de tapa propia (pisa la miniatura del primer video/foto).
+  if (work.cover) return `data-bg="url('${work.cover}')"`;
   const img = work.items.find(it => it.type === 'image');
   if (img) return `data-bg="url('${img.thumb || img.src}')"`;
   const vid = work.items.find(it => it.type === 'youtube');
@@ -262,9 +305,27 @@ function workHTML(def) {
   const vid = isVideoWork(w) ? ' is-video' : ''; // en videos sólo la tapa es clickeable
   const play = isVideoWork(w) ? `<button class="media-play" aria-label="Reproducir">${playSVG}</button>` : '';
 
-  if (w.variant === 'full') {
+  // Página placeholder: sin contenido todavía. No es clickeable (no se le
+  // enganchan handlers en attachPageHandlers) y muestra "Próximamente".
+  if (w.comingSoon) {
     return `
-      <div class="pg pg--work v-full${vid}" style="--accent:${acc}">
+      <div class="pg pg--work pg--soon" style="--accent:${acc}">
+        <span class="work-no display">${w.no}</span>
+        <div class="soon-inner">
+          <span class="kicker accent">${def.section.label}</span>
+          <h2 class="work-title display">${w.title}</h2>
+          ${w.meta ? `<span class="work-meta">${w.meta}</span>` : ''}
+          <span class="soon-tag">Próximamente</span>
+        </div>
+      </div>`;
+  }
+
+  if (w.variant === 'full') {
+    // is-side: tratamiento tipo "Sobre mí" — foto a la derecha, oscurecida a
+    // la izquierda, texto en columna izquierda centrado.
+    const side = w.coverSide ? ' is-side' : '';
+    return `
+      <div class="pg pg--work v-full${side}${vid}" style="--accent:${acc}">
         <div class="work-bg lazy-bg" ${workCoverAttrs(w)}></div>
         <div class="work-bg__grad"></div>
         <span class="work-no display">${w.no}</span>
@@ -350,7 +411,8 @@ function frontHTML(def, i) {
 
     case 'divider': {
       const sec = def.section;
-      const thumbs = sec.works.slice(0, 3).map(w =>
+      // Sólo works con tapa: los placeholders (sin items) no dejan cuadros vacíos.
+      const thumbs = sec.works.filter(w => w.items.length).slice(0, 3).map(w =>
         `<div class="divider__thumb lazy-bg" ${workCoverAttrs(w)}></div>`).join('');
       return `
         <div class="pg pg--divider" style="--accent:${sec.accent}">

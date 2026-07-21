@@ -579,6 +579,20 @@ body.is-table .book::after  { opacity: 1; }
 }
 .v-full .work-foot .work-no { display: none; }
 
+/* FULL «is-side»: tratamiento tipo "Sobre mí" — foto revelada a la derecha,
+   oscurecida a la izquierda, texto en columna izquierda centrado vertical. */
+.v-full.is-side .work-bg { background-position: center 72%; }
+.v-full.is-side .work-bg__grad {
+  background:
+    linear-gradient(97deg, rgba(6,6,6,0.97) 24%, rgba(6,6,6,0.72) 46%, rgba(6,6,6,0.2) 78%, rgba(6,6,6,0.06) 100%);
+}
+.v-full.is-side .work-foot {
+  top: 0; bottom: 0; right: auto;
+  width: min(58%, 640px);
+  justify-content: center;
+  padding: clamp(32px, 5vw, 72px);
+}
+
 /* Variante SPLIT: media columna texto / media columna foto */
 .v-split { display: grid; grid-template-columns: 1fr 1fr; }
 .v-split .work-col {
@@ -640,6 +654,42 @@ body.is-table .book::after  { opacity: 1; }
 .v-collage .work-col {
   display: flex; flex-direction: column; justify-content: center;
   padding: clamp(30px, 4vw, 60px);
+}
+
+/* Placeholder "Próximamente": proyecto sin contenido aún, no clickeable */
+.pg--soon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  background:
+    radial-gradient(75% 65% at 50% 40%, color-mix(in srgb, var(--accent) 10%, #0c0b0a) 0%, #0a0908 72%);
+}
+.pg--soon .work-no {
+  position: absolute;
+  top: clamp(10px, 2vw, 30px); right: clamp(16px, 3vw, 48px);
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(242,236,225,0.16);
+  pointer-events: none;
+}
+.soon-inner {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center;
+  padding: clamp(30px, 6vw, 72px);
+}
+.soon-inner .kicker { margin-bottom: 14px; }
+.soon-inner .work-title { margin: 0 0 10px; }
+.soon-inner .work-meta { margin-bottom: 22px; }
+.soon-tag {
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: 100px;
+  padding: 9px 20px;
 }
 
 /* ── GRACIAS ── */
@@ -964,6 +1014,19 @@ body.is-table .book::after  { opacity: 1; }
   .ctrl--prev, .ctrl--next { width: 52px; height: 52px; font-size: 22px; }
   .ctrl--prev { left: 10px; }
   .ctrl--next { right: 10px; }
+
+  /* is-side en el celu: la columna al 58% queda muy angosta — el texto pasa a
+     banda inferior con oscurecido de abajo, y la foto se ve arriba. */
+  .v-full.is-side .work-foot {
+    top: auto; bottom: 0; right: 0;
+    width: auto;
+    justify-content: flex-end;
+    padding: clamp(24px, 7vw, 40px);
+  }
+  .v-full.is-side .work-bg__grad {
+    background: linear-gradient(to top, rgba(6,6,6,0.96) 10%, rgba(6,6,6,0.2) 52%, rgba(6,6,6,0.5) 100%);
+  }
+  .v-full.is-side .work-bg { background-position: center 40%; }
 
   /* Apilar variantes en vertical */
   .v-split, .v-editorial, .v-collage { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
