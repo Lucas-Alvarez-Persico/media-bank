@@ -656,6 +656,86 @@ body.is-table .book::after  { opacity: 1; }
   padding: clamp(30px, 4vw, 60px);
 }
 
+/* Card «logo» (BAFA): isotipo como imagen + textos debajo sobre fondo oscuro */
+.pg--bafa {
+  position: relative; overflow: hidden;
+  container-type: size;
+  background:
+    radial-gradient(70% 60% at 50% 44%, color-mix(in srgb, var(--accent) 14%, #0c0b0a) 0%, #080707 76%);
+}
+.pg--bafa .work-no {
+  position: absolute;
+  top: clamp(10px, 2vw, 30px); right: clamp(16px, 3vw, 48px);
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(242,236,225,0.16);
+  pointer-events: none; z-index: 4;
+}
+.bafa-badge {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center;
+  z-index: 1;
+}
+.bafa-logo {
+  width: min(68cqmin, 480px);
+  aspect-ratio: 1 / 1;
+  display: block;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.bafa-badge__cta {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center;
+  max-width: min(72cqmin, 420px);
+  margin-top: clamp(18px, 2.8cqmin, 28px);
+}
+.bafa-badge__cta .work-desc {
+  margin-top: 0;
+  color: var(--cream);
+  font-weight: 500;
+}
+.bafa-badge__cta .work-cta {
+  margin-top: 14px;
+  color: var(--cream);
+  border-bottom-color: rgba(242, 236, 225, 0.42);
+}
+.bafa-badge__cta .work-extlink {
+  margin-top: 36px;
+  color: var(--cream);
+  border-bottom-color: rgba(242, 236, 225, 0.32);
+}
+.bafa-badge__cta .work-extlink:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+/* Franja superior (eyebrow) con velo oscuro para legibilidad sobre el círculo */
+.bafa-top {
+  position: absolute; top: 0; left: 0; right: 0;
+  padding: clamp(22px, 3.5vw, 42px);
+  z-index: 3; pointer-events: none;
+  background: linear-gradient(to bottom, rgba(6,6,6,0.72), rgba(6,6,6,0) 92%);
+}
+.bafa-top .kicker { pointer-events: auto; }
+/* El CTA reacciona a SU propio hover, no al de toda la página (si no, quedaba
+   en color acento mientras el cursor estuviera en cualquier parte de la card). */
+.pg--bafa:hover .bafa-badge__cta .work-cta { color: var(--cream); }
+.pg--bafa .bafa-badge__cta .work-cta:hover { color: var(--accent); }
+.work-extlink {
+  margin-top: 24px; /* Separación un poco más reducida para que entre en el círculo */
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  color: #14110f; /* Texto en negro */
+  text-decoration: none;
+  /* Subrayado negro semitransparente que cambia a acento en hover */
+  border-bottom: 1px solid rgba(20, 17, 15, 0.3); 
+  padding-bottom: 4px;
+  transition: color var(--transition), border-color var(--transition);
+}
+.work-extlink:hover { 
+  color: var(--accent); 
+  border-bottom-color: var(--accent); 
+}
+
 /* Placeholder "Próximamente": proyecto sin contenido aún, no clickeable */
 .pg--soon {
   display: flex;
@@ -888,6 +968,37 @@ body.is-table .book::after  { opacity: 1; }
   margin: 0 auto;
 }
 .work__body--single { max-width: 1100px; display: flex; justify-content: center; }
+
+/* Galería con sub-galerías: menú lateral izquierdo + mural */
+.work__body--cats {
+  display: grid;
+  grid-template-columns: minmax(150px, 190px) 1fr;
+  gap: clamp(20px, 3vw, 44px);
+  align-items: start;
+}
+.cat-nav {
+  position: sticky; top: 92px;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+}
+.cat-nav__btn {
+  text-align: left;
+  background: none; border: none;
+  border-bottom: 2px solid transparent; /* subrayado activo — no desplaza el texto */
+  color: var(--muted);
+  font-family: 'Archivo', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+  padding: 3px 0; /* sin sangría: alineado con el borde de la galería y los títulos */
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition);
+}
+.cat-nav__btn:hover { color: var(--cream); }
+.cat-nav__btn.is-active { color: var(--accent); border-bottom-color: var(--accent); }
+.cat-gallery { min-width: 0; } /* evita que el masonry desborde la columna del grid */
+.cat-empty {
+  padding: 56px 4px;
+  font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--muted);
+}
 .work__player {
   width: 100%;
   aspect-ratio: 16 / 9;
@@ -1049,6 +1160,23 @@ body.is-table .book::after  { opacity: 1; }
     left: 50%;
     transform: translateX(-50%);
   }
+
+  /* Sub-galerías en el celu: el menú pasa a fila horizontal arriba */
+  .work__body--cats { grid-template-columns: 1fr; gap: 6px; }
+  .cat-nav {
+    position: sticky; top: 0; z-index: 6;
+    flex-direction: row; gap: 2px;
+    overflow-x: auto; scrollbar-width: none;
+    background: rgba(6,6,6,0.92);
+    padding: 4px 0 8px;
+  }
+  .cat-nav::-webkit-scrollbar { display: none; }
+  .cat-nav__btn {
+    flex: 0 0 auto;
+    border-left: none; border-bottom: 2px solid transparent;
+    white-space: nowrap; padding: 10px 13px; font-size: 11px;
+  }
+  .cat-nav__btn.is-active { border-left-color: transparent; border-bottom-color: var(--accent); }
 
   .work__bar { flex-direction: column; gap: 14px; padding: 22px 20px; }
   /* "Volver a la revista": botón flotante abajo y centrado */

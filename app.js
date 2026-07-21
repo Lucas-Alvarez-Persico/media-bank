@@ -95,6 +95,9 @@ const clipMaker = (dir, meta) => (file, title) => ({
 });
 const clip = clipMaker('hospital-universitario-austral', 'Hospital Universitario Austral');
 const clipLT = clipMaker('lopez-taibo', 'López Taibo');
+// Videos de BAFA (todos en fotos/bafa/). El label de sección va como meta,
+// así el caption del lightbox dice "Cliente — Sección".
+const clipBAFA = (seccion) => clipMaker('bafa', seccion);
 
 const hospitalItems = [
   video('6G79yq3th1g', 'SaNar: salidas a la naturaleza', 'Hospital Universitario Austral'),
@@ -178,8 +181,40 @@ const sections = [
     id: 'moda', label: 'Moda', nav: 'Moda', accent: '#c98aa6',
     desc: 'Editoriales y campañas de moda.',
     works: [
-      // BAFA — sin contenido por ahora: se muestra como "Próximamente".
-      { title: 'BAFA', meta: '', comingSoon: true, items: [] },
+      // BAFA — galería con sub-galerías (menú lateral al abrirla). Para cargar
+      // los videos de cada sección:
+      //   1) poné los .mp4 en fotos/bafa-<seccion>/ (arte, hoteleria, joyeria, moda)
+      //   2) comprimí + poster con el script apuntándolo a esa carpeta
+      //   3) listá cada uno acá: clipBAFA('<seccion>')('slug.mp4', 'Título')
+      { title: 'BAFA', meta: 'Contenido audiovisual', circle: true,
+        desc: 'Galería de trabajos para BAFA.',
+        link: { href: 'https://www.distritobafa.com.ar/novedades/categories/bafa-creadores',
+                label: 'Ver en Distrito BAFA' },
+        categories: [
+          { label: 'Arte', items: [
+            clipBAFA('Arte')('4-zurbaran.mp4', 'Zurbarán'),
+            clipBAFA('Arte')('5-zurbaran.mp4', 'Zurbarán II'),
+            clipBAFA('Arte')('6-zurbaran.mp4', 'Zurbarán III'),
+            clipBAFA('Arte')('15-miranda-bosch.mp4', 'Miranda Bosch'),
+            clipBAFA('Arte')('17-miranda-bosch.mp4', 'Miranda Bosch II'),
+            clipBAFA('Arte')('18-del-infinito.mp4', 'Del Infinito'),
+            clipBAFA('Arte')('21-javier-iturrioz-1.mp4', 'Javier Iturrioz'),
+          ] },
+          { label: 'Hotelería', items: [
+            clipBAFA('Hotelería')('1-casasur.mp4', 'Casasur'),
+            clipBAFA('Hotelería')('2-casasur.mp4', 'Casasur II'),
+            clipBAFA('Hotelería')('3-casasur.mp4', 'Casasur III'),
+            clipBAFA('Hotelería')('19-mio-buenos-aires.mp4', 'Mío Buenos Aires'),
+          ] },
+          { label: 'Joyería', items: [
+            clipBAFA('Joyería')('10-eltrust.mp4', 'El Trust'),
+          ] },
+          { label: 'Moda', items: [
+            clipBAFA('Moda')('11-solange-m.mp4', 'Solange'),
+            clipBAFA('Moda')('14-guido.mp4', 'Guido'),
+          ] },
+        ],
+        items: [] },
       { title: 'López Taibo', meta: 'Marca de calzado · Contenido audiovisual',
         desc: 'Contenido audiovisual para López Taibo: presentación de modelos y piezas editoriales sobre el oficio del calzado.',
         variant: 'full', coverSide: true, cover: 'fotos/lopez-taibo/cover.jpg',
@@ -317,6 +352,26 @@ function workHTML(def) {
           ${w.meta ? `<span class="work-meta">${w.meta}</span>` : ''}
           <span class="soon-tag">Próximamente</span>
         </div>
+      </div>`;
+  }
+
+  // Card «logo»: isotipo BAFA (imagen con círculo) + textos debajo sobre fondo oscuro.
+  if (w.circle) {
+    const link = w.link
+      ? `<a class="work-extlink" href="${w.link.href}" target="_blank" rel="noopener">${w.link.label} &#8599;</a>`
+      : '';
+    return `
+      <div class="pg pg--work pg--bafa" style="--accent:${acc}">
+        <span class="work-no display">${w.no}</span>
+        <div class="bafa-badge">
+          <img class="bafa-logo" src="assets/bafa-logo.png" alt="${w.title}" width="480" height="480" />
+          <div class="bafa-badge__cta">
+            ${w.desc ? `<p class="work-desc">${w.desc}</p>` : ''}
+            <span class="work-cta">Ver galería &#8594;</span>
+            ${link}
+          </div>
+        </div>
+        <div class="bafa-top"><span class="kicker accent">${def.section.label}</span></div>
       </div>`;
   }
 
@@ -789,6 +844,25 @@ function tileMarkup(item) {
     <div class="masonry__overlay"><span class="masonry__caption">${label}</span>${meta}</div>`;
 }
 
+// Mural de un conjunto de items. `lbItems` se fija al set mostrado para que el
+// lightbox (prev/next) navegue dentro de la galería visible.
+function tileGrid(items) {
+  lbItems = items;
+  const grid = document.createElement('div');
+  grid.className = 'masonry';
+  items.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'masonry__item' + (item.type === 'youtube' || item.type === 'video' ? ' masonry__item--video' : '');
+    el.style.animationDelay = (i * 0.04) + 's';
+    el.innerHTML = tileMarkup(item);
+    const yt = el.querySelector('img[data-yt]');
+    if (yt) fixYtImg(yt);
+    el.addEventListener('click', () => openLightbox(i));
+    grid.appendChild(el);
+  });
+  return grid;
+}
+
 function openWork(work) {
   if (!work) return;
   document.getElementById('workEyebrow').textContent = work.section ? work.section.label : '';
@@ -797,7 +871,35 @@ function openWork(work) {
   document.getElementById('workDesc').textContent    = work.desc || '';
 
   const body = document.getElementById('workBody');
-  if (isVideoWork(work)) {
+  if (work.categories) {
+    // Galería con sub-galerías: menú lateral izquierdo + mural que cambia.
+    body.className = 'work__body work__body--cats';
+    body.innerHTML = '';
+    const nav = document.createElement('nav');
+    nav.className = 'cat-nav';
+    const gallery = document.createElement('div');
+    gallery.className = 'cat-gallery';
+
+    const show = (idx) => {
+      const cat = work.categories[idx];
+      gallery.innerHTML = '';
+      if (cat.items.length) gallery.appendChild(tileGrid(cat.items));
+      else { lbItems = []; gallery.innerHTML = '<p class="cat-empty">Próximamente</p>'; }
+      nav.querySelectorAll('.cat-nav__btn').forEach((b, i) => b.classList.toggle('is-active', i === idx));
+      gallery.scrollTop = 0;
+    };
+
+    work.categories.forEach((cat, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'cat-nav__btn';
+      btn.textContent = cat.label;
+      btn.addEventListener('click', () => show(i));
+      nav.appendChild(btn);
+    });
+    body.appendChild(nav);
+    body.appendChild(gallery);
+    show(0);
+  } else if (isVideoWork(work)) {
     const it = work.items[0];
     body.className = 'work__body work__body--single';
     body.innerHTML = `
@@ -812,23 +914,11 @@ function openWork(work) {
   } else {
     body.className = 'work__body';
     body.innerHTML = '';
-    lbItems = work.items;
-    const grid = document.createElement('div');
-    grid.className = 'masonry';
-    work.items.forEach((item, i) => {
-      const el = document.createElement('div');
-      el.className = 'masonry__item' + (item.type === 'youtube' || item.type === 'video' ? ' masonry__item--video' : '');
-      el.style.animationDelay = (i * 0.04) + 's';
-      el.innerHTML = tileMarkup(item);
-      const yt = el.querySelector('img[data-yt]');
-      if (yt) fixYtImg(yt);
-      el.addEventListener('click', () => openLightbox(i));
-      grid.appendChild(el);
-    });
-    body.appendChild(grid);
+    body.appendChild(tileGrid(work.items));
   }
 
   const w = document.getElementById('work');
+  w.style.setProperty('--accent', (work.section && work.section.accent) || '#c9a27f');
   w.classList.add('open');
   w.setAttribute('aria-hidden', 'false');
   w.scrollTop = 0;
