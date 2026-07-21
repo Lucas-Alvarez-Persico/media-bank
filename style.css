@@ -1189,7 +1189,12 @@ body.is-table .book::after  { opacity: 1; }
   .v-splitL .work-col { order: 2; }
   .v-splitL .work-img { order: 1; }
   .v-split .work-col, .v-collage .work-col, .v-editorial .work-col { padding: clamp(22px, 6vw, 36px); }
-  .v-editorial .work-frame { height: auto; }
+  /* El marco editorial debe llenar su fila (1fr): con height:76% heredado y
+     align-items:center el marco colapsaba a la altura del play → en el celu no
+     se veía el thumbnail ni se podía tocar el botón. align-self:stretch + flex
+     hace que el marco ocupe la fila y la imagen lo llene. */
+  .v-editorial .work-frame { height: auto; align-self: stretch; display: flex; }
+  .v-editorial .work-img { min-height: 0; }
   .v-collage .collage { grid-template-rows: repeat(2, 1fr); }
   .v-collage .collage__cell.c0 { grid-row: span 1; }
   .v-collage .collage__cell.c4 { display: none; }
