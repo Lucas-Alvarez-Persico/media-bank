@@ -364,9 +364,11 @@ function workHTML(def) {
       <div class="pg pg--work pg--bafa" style="--accent:${acc}">
         <span class="work-no display">${w.no}</span>
         <div class="bafa-badge">
-          <img class="bafa-logo" src="assets/bafa-logo.png" alt="${w.title}" width="480" height="480" />
+          <div class="bafa-figure">
+            <img class="bafa-logo" src="assets/bafa-logo.png" alt="${w.title}" width="480" height="480" />
+            ${w.desc ? `<p class="bafa-figure__desc">${w.desc}</p>` : ''}
+          </div>
           <div class="bafa-badge__cta">
-            ${w.desc ? `<p class="work-desc">${w.desc}</p>` : ''}
             <span class="work-cta">Ver galería &#8594;</span>
             ${link}
           </div>
@@ -488,7 +490,7 @@ function frontHTML(def, i) {
     case 'thankyou':
       return `
         <div class="pg pg--thanks">
-          <div class="pg__bar"><span>Contacto</span><span>Fin</span></div>
+          <div class="pg__bar"><span>Contacto</span></div>
           <h2 class="thanks-title display">GRACIAS.</h2>
           <div class="thanks__contact">
             <a class="thanks__email" href="mailto:martulopezp@gmail.com">martulopezp@gmail.com</a>
@@ -511,7 +513,7 @@ function frontHTML(def, i) {
               <span>Muna Films</span>
             </a>
           </div>
-          <span class="pg__foot">&copy; 2025 Martina López Parafita</span>
+          <span class="pg__foot">&copy; 2026 Martina López Parafita</span>
         </div>`;
   }
   return '';
@@ -886,7 +888,9 @@ function openWork(work) {
       if (cat.items.length) gallery.appendChild(tileGrid(cat.items));
       else { lbItems = []; gallery.innerHTML = '<p class="cat-empty">Próximamente</p>'; }
       nav.querySelectorAll('.cat-nav__btn').forEach((b, i) => b.classList.toggle('is-active', i === idx));
-      gallery.scrollTop = 0;
+      // Nueva sección: arrancar arriba y con el menú visible.
+      nav.classList.remove('is-hidden');
+      document.getElementById('work').scrollTop = 0;
     };
 
     work.categories.forEach((cat, i) => {
@@ -1057,6 +1061,22 @@ function initNoZoom() {
     document.addEventListener(ev, (e) => e.preventDefault(), { passive: false }));
 }
 
+// El menú de sub-galerías (cat-nav) se desvanece al scrollear una sección hacia
+// abajo y reaparece al subir — el mural gana protagonismo sin perder el menú.
+function initCatNavAutoHide() {
+  const work = document.getElementById('work');
+  let last = 0;
+  work.addEventListener('scroll', () => {
+    const nav = work.querySelector('.cat-nav');
+    if (!nav) { last = work.scrollTop; return; }
+    const st = work.scrollTop;
+    if (st < 80)            nav.classList.remove('is-hidden'); // cerca del tope: siempre visible
+    else if (st > last + 4) nav.classList.add('is-hidden');    // bajando: ocultar
+    else if (st < last - 4) nav.classList.remove('is-hidden'); // subiendo: mostrar
+    last = st;
+  }, { passive: true });
+}
+
 // ════════════════════════════════════════════════════════════════════════════
 //  INIT
 // ════════════════════════════════════════════════════════════════════════════
@@ -1066,6 +1086,7 @@ document.addEventListener('DOMContentLoaded', () => {
   buildTopnav();
   initSwipe();
   initZoom();
+  initCatNavAutoHide();
 
   document.getElementById('navPrev').addEventListener('click', () => go(-1));
   document.getElementById('navNext').addEventListener('click', () => go(1));

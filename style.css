@@ -671,13 +671,40 @@ body.is-table .book::after  { opacity: 1; }
   pointer-events: none; z-index: 4;
 }
 .bafa-badge {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  position: absolute; top: 54%; left: 50%; transform: translate(-50%, -50%);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center;
   z-index: 1;
 }
+/* Contenedor del isotipo: permite superponer la descripción DENTRO del círculo. */
+.bafa-figure {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+}
+.bafa-figure__desc {
+  position: absolute;
+  /* En la mitad INFERIOR del disco, debajo del wordmark «BAFA» del isotipo,
+     para que no se pisen. */
+  top: 75%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 62%;                      /* dentro del disco, sin tocar el borde */
+  margin: 0;
+  text-align: center;
+  color: #14110f;                  /* negro sobre el círculo blanco */
+  font-weight: 600;
+  line-height: 1.3;
+  font-size: clamp(11px, 3.1cqmin, 18px);
+  pointer-events: none;
+}
 .bafa-logo {
   width: min(68cqmin, 480px);
+  height: min(68cqmin, 480px);
+  /* flex-shrink:0 + alto explícito: dentro del flex-column .bafa-badge el flex
+     comprimía la altura al faltar espacio (al cambiar resolución / en el celu),
+     y el círculo quedaba ovalado. Fijar el alto y bloquear el shrink lo mantiene
+     siempre perfectamente redondo. */
+  flex-shrink: 0;
   aspect-ratio: 1 / 1;
   display: block;
   object-fit: cover;
@@ -688,11 +715,6 @@ body.is-table .book::after  { opacity: 1; }
   text-align: center;
   max-width: min(72cqmin, 420px);
   margin-top: clamp(18px, 2.8cqmin, 28px);
-}
-.bafa-badge__cta .work-desc {
-  margin-top: 0;
-  color: var(--cream);
-  font-weight: 500;
 }
 .bafa-badge__cta .work-cta {
   margin-top: 14px;
@@ -979,6 +1001,14 @@ body.is-table .book::after  { opacity: 1; }
 .cat-nav {
   position: sticky; top: 92px;
   display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+/* Al scrollear una sección hacia abajo, el menú de sub-galerías se desvanece
+   (JS le pone .is-hidden); al subir vuelve a aparecer. */
+.cat-nav.is-hidden {
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
 }
 .cat-nav__btn {
   text-align: left;
@@ -994,6 +1024,20 @@ body.is-table .book::after  { opacity: 1; }
 .cat-nav__btn:hover { color: var(--cream); }
 .cat-nav__btn.is-active { color: var(--accent); border-bottom-color: var(--accent); }
 .cat-gallery { min-width: 0; } /* evita que el masonry desborde la columna del grid */
+/* Sub-galerías de BAFA: los clips son verticales y de altura uniforme, así que
+   una grilla ordenada queda mejor que el masonry de columnas — este balanceaba
+   los ítems (p.ej. 7 en 3 columnas → 3/2/2) y dejaba una columna corta con un
+   hueco raro en el medio. Con grid, cualquier resto cae en la última fila. */
+.cat-gallery .masonry {
+  columns: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+.cat-gallery .masonry__item { margin-bottom: 0; }
+@media (max-width: 1100px) { .cat-gallery .masonry { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 700px)  { .cat-gallery .masonry { grid-template-columns: 1fr; } }
 .cat-empty {
   padding: 56px 4px;
   font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase;
