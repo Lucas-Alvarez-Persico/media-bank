@@ -95,6 +95,9 @@ const clipMaker = (dir, meta) => (file, title) => ({
 });
 const clip = clipMaker('hospital-universitario-austral', 'Hospital Universitario Austral');
 const clipLT = clipMaker('lopez-taibo', 'López Taibo');
+// Cortometrajes con el video alojado en el proyecto (no en YouTube).
+const clipBarro = clipMaker('en-el-barro', 'En El Barro');
+const clipHormiga = clipMaker('plan-hormiga', 'Plan Hormiga');
 // Videos de BAFA (todos en fotos/bafa/). El label de sección va como meta,
 // así el caption del lightbox dice "Cliente — Sección".
 const clipBAFA = (seccion) => clipMaker('bafa', seccion);
@@ -145,7 +148,7 @@ const lopezTaiboItems = [
 const comandanteItems = photos('el-comandante', [
   '2ee3bc238195039.690ff9183a1a1.webp', '38dae9238195039.690ff91839978.webp',
   '6b54fb238195039.690ff9183aa74.webp', '805c93238195039.690ff9183b0f4.webp',
-  '23.jpg', '24.jpg', '25.jpg', '26.jpg', '27.jpg', '28.jpg',
+  '23.jpg', '24.jpg', '25.jpg', '27.jpg', '28.jpg',
 ], 'El Comandante', 'Cortometraje · Dirección de Arte');
 
 const sections = [
@@ -243,6 +246,10 @@ const sections = [
     id: 'ficciones', label: 'Cortometrajes', nav: 'Cortos', accent: '#8ab0a4',
     desc: 'Ficción y documental: arte, cámara e iluminación.',
     works: [
+      { title: 'En El Barro', meta: 'Teaser · Cortometraje', variant: 'splitL',
+        desc: 'Teaser del cortometraje «En El Barro».',
+        cover: 'fotos/en-el-barro/posters/teaser-en-el-barro.jpg',
+        items: [clipBarro('teaser-en-el-barro.mp4', 'Teaser — En El Barro')] },
       { title: 'Acumuladores', meta: 'Documental · Producción y Cámara', variant: 'full',
         desc: 'Documental. Producción y cámara de un retrato observacional.',
         items: [video('RzHyFfUYjfw', 'Acumuladores', 'Documental')] },
@@ -252,6 +259,10 @@ const sections = [
         coverPos: '57% center',
         gridGallery: true, // fotos de proporción uniforme: grilla ordenada, sin hueco
         items: comandanteItems },
+      { title: 'Plan Hormiga', meta: 'Cortometraje', variant: 'full',
+        desc: 'Cortometraje «Plan Hormiga».',
+        cover: 'fotos/plan-hormiga/posters/plan-hormiga.jpg',
+        items: [clipHormiga('plan-hormiga.mp4', 'Plan Hormiga')] },
     ],
   },
   {
@@ -325,7 +336,10 @@ function workCoverAttrs(work) {
   if (!vid) return `data-bg=""${pos}`;
   return `data-bg="url('${ytThumbHD(vid.id)}')" data-bg-fallback="url('${ytThumb(vid.id)}')"${pos}`;
 }
-const isVideoWork = (work) => work.items.length === 1 && work.items[0].type === 'youtube';
+// Un work de un solo video (de YouTube o alojado acá): la página muestra el
+// play sobre la tapa y al abrirla va directo al reproductor, sin galería.
+const isVideoWork = (work) =>
+  work.items.length === 1 && (work.items[0].type === 'youtube' || work.items[0].type === 'video');
 const playSVG = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`;
 
 
@@ -502,7 +516,7 @@ function frontHTML(def, i) {
       return `
         <div class="pg pg--thanks">
           <div class="pg__bar"><span>Contacto</span></div>
-          <h2 class="thanks-title display">GRACIAS.</h2>
+          <h2 class="thanks-title display">TRABAJEMOS<br>JUNTOS</h2>
           <div class="thanks__contact">
             <a class="thanks__email" href="mailto:martulopezp@gmail.com">martulopezp@gmail.com</a>
             <div class="thanks__socials">
@@ -920,11 +934,13 @@ function openWork(work) {
     body.className = 'work__body work__body--single';
     body.innerHTML = `
       <div class="work__player">
-        <iframe
+        ${it.type === 'video'
+          ? `<video src="${it.src}" poster="${it.poster}" controls autoplay playsinline preload="metadata"></video>`
+          : `<iframe
           src="https://www.youtube.com/embed/${it.id}?rel=0&modestbranding=1&autoplay=1"
           title="${work.title}"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen></iframe>
+          allowfullscreen></iframe>`}
       </div>`;
     lbItems = [];
   } else {

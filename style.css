@@ -803,7 +803,7 @@ body.is-table .book::after  { opacity: 1; }
   padding: 9px 20px;
 }
 
-/* ── GRACIAS ── */
+/* ── CONTACTO ── */
 .pg--thanks {
   display: flex;
   flex-direction: column;
@@ -812,9 +812,11 @@ body.is-table .book::after  { opacity: 1; }
   background: radial-gradient(80% 80% at 50% 30%, #161412 0%, #090807 75%);
 }
 .thanks-title {
-  font-size: clamp(72px, 16vw, 240px);
+  /* Más chico que el «GRACIAS.» anterior (240px): la frase es el doble de
+     larga y a ese cuerpo se desbordaba del ancho de la página. */
+  font-size: clamp(44px, 10vw, 150px);
   color: var(--cream);
-  line-height: 0.8;
+  line-height: 1.02; /* aire entre «TRABAJEMOS» y «JUNTOS» */
 }
 .thanks__contact { margin-top: clamp(24px, 4vw, 44px); }
 .thanks__email {
@@ -1061,6 +1063,8 @@ body.is-table .book::after  { opacity: 1; }
   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
 }
 .work__player iframe { width: 100%; height: 100%; border: none; }
+/* Video alojado en el proyecto: mismo marco que el iframe de YouTube. */
+.work__player video { width: 100%; height: 100%; border: none; display: block; object-fit: contain; background: #0a0a0a; }
 
 /* ── Mural ── */
 .masonry { columns: 3; column-gap: 12px; }
