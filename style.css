@@ -390,7 +390,7 @@ body.is-table .book::after  { opacity: 1; }
 .pg--about { display: flex; }
 .about__bg {
   position: absolute; inset: 0;
-  background-size: cover; background-position: center;
+  background-size: cover; background-position: 10% center;
   filter: grayscale(0.4) contrast(1.05) brightness(0.5);
 }
 .about__bg::after {
@@ -621,6 +621,15 @@ body.is-table .book::after  { opacity: 1; }
   color: transparent;
   -webkit-text-stroke: 1.5px rgba(242,236,225,0.1);
   pointer-events: none;
+}
+/* «num-mini» (DULCE): número chico en la esquina inferior derecha, como un
+   índice discreto y no un número gigante que se lea como divisor de sección. */
+.v-editorial.num-mini .work-no--ghost {
+  top: auto; left: auto;
+  right: clamp(20px, 3vw, 48px);
+  bottom: clamp(18px, 3vw, 38px);
+  font-size: clamp(28px, 4vw, 56px);
+  -webkit-text-stroke: 1px rgba(242,236,225,0.16);
 }
 .v-editorial .work-col { position: relative; z-index: 2; }
 .v-editorial .work-frame {
@@ -1057,6 +1066,20 @@ body.is-table .book::after  { opacity: 1; }
 .masonry { columns: 3; column-gap: 12px; }
 @media (max-width: 1100px) { .masonry { columns: 2; } }
 @media (max-width: 700px)  { .masonry { columns: 1; } }
+
+/* Grilla ordenada (opt-in por work con `gridGallery`): para sets de fotos con
+   proporción uniforme, donde el masonry de columnas balanceaba mal y dejaba una
+   columna corta con un hueco vacío al final. Con grid el sobrante cae ordenado
+   en la última fila. Mismo criterio que las sub-galerías de BAFA. */
+.masonry--grid {
+  columns: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.masonry--grid .masonry__item { margin-bottom: 0; }
+@media (max-width: 1100px) { .masonry--grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 700px)  { .masonry--grid { grid-template-columns: 1fr; } }
 
 .masonry__item {
   break-inside: avoid;

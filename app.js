@@ -145,6 +145,7 @@ const lopezTaiboItems = [
 const comandanteItems = photos('el-comandante', [
   '2ee3bc238195039.690ff9183a1a1.webp', '38dae9238195039.690ff91839978.webp',
   '6b54fb238195039.690ff9183aa74.webp', '805c93238195039.690ff9183b0f4.webp',
+  '23.jpg', '24.jpg', '25.jpg', '26.jpg', '27.jpg', '28.jpg',
 ], 'El Comandante', 'Cortometraje · Dirección de Arte');
 
 const sections = [
@@ -163,7 +164,7 @@ const sections = [
       { title: '1 Momento', meta: 'Luca Laurito · Dirección y Color', variant: 'splitR',
         desc: 'Videoclip de Luca Laurito. Dirección y corrección de color para una atmósfera nocturna y cálida.',
         items: [video('0897I0LQ-pE', '1 Momento', 'Luca Laurito')] },
-      { title: 'DULCE', meta: 'UNYX · Cámara', variant: 'editorial',
+      { title: 'DULCE', meta: 'UNYX · Cámara', variant: 'editorial', numMini: true,
         desc: 'Videoclip para UNYX. Cámara y registro siguiendo la energía del tema.',
         items: [video('ph-mFOwGMzo', 'DULCE', 'UNYX')] },
       { title: 'POCO Set', meta: 'Majo Chicar · Cámara', variant: 'splitL',
@@ -225,19 +226,21 @@ const sections = [
     id: 'cobertura-shows', label: 'Cobertura de Shows', nav: 'Cobertura', accent: '#c9b07f',
     desc: 'Registro fotográfico de shows en vivo.',
     works: [
-      { title: 'Franco Martínez', meta: 'En vivo · Ladran Sancho',
-        desc: 'Cobertura fotográfica del show en Ladran Sancho. Registro en vivo de la puesta, los gestos y el público.',
-        items: francoItems },
       { title: 'Fran Martínez', meta: 'En vivo · La Tangente',
         desc: 'Cobertura fotográfica del show en La Tangente. Registro en vivo del escenario, la luz y el público.',
+        dividerThumb: 'fotos/coberturas-portada/thumbs/la-tangente.jpg',
         items: tangenteItems },
+      { title: 'Franco Martínez', meta: 'En vivo · Ladran Sancho',
+        desc: 'Cobertura fotográfica del show en Ladran Sancho. Registro en vivo de la puesta, los gestos y el público.',
+        dividerThumb: 'fotos/coberturas-portada/thumbs/ladran-sancho.jpg',
+        items: francoItems },
       { title: 'Luchi Davit', meta: 'En vivo · The Monkey\'s',
         desc: 'Cobertura del show en The Monkey\'s. Fotografía de escenario en clave de luz baja y color.',
         items: luchiItems },
     ],
   },
   {
-    id: 'ficciones', label: 'Ficciones · Cortos', nav: 'Ficciones', accent: '#8ab0a4',
+    id: 'ficciones', label: 'Cortometrajes', nav: 'Cortos', accent: '#8ab0a4',
     desc: 'Ficción y documental: arte, cámara e iluminación.',
     works: [
       { title: 'Acumuladores', meta: 'Documental · Producción y Cámara', variant: 'full',
@@ -245,10 +248,10 @@ const sections = [
         items: [video('RzHyFfUYjfw', 'Acumuladores', 'Documental')] },
       { title: 'El Comandante', meta: 'Cortometraje · Dirección de Arte', variant: 'splitR',
         desc: 'Cortometraje. Dirección de arte: diseño de los espacios y objetos que habitan la escena.',
+        cover: 'fotos/el-comandante/thumbs/6b54fb238195039.690ff9183aa74.webp',
+        coverPos: '57% center',
+        gridGallery: true, // fotos de proporción uniforme: grilla ordenada, sin hueco
         items: comandanteItems },
-      { title: 'FADU-UBA', meta: 'FADU, UBA · Iluminación y Cámara', variant: 'editorial',
-        desc: 'Pieza audiovisual para FADU, UBA. Iluminación y cámara.',
-        items: [video('9zBUHY4DXSc', 'FADU-UBA', 'FADU, UBA')] },
     ],
   },
   {
@@ -258,6 +261,8 @@ const sections = [
       { title: 'Hospital Universitario Austral', meta: 'Contenido institucional · Edición de video',
         desc: 'Piezas para el Hospital Universitario Austral: «SaNar: salidas a la naturaleza» y contenido para redes. Edición de video.',
         variant: 'splitL', // tapa del video a la izquierda, texto a la derecha
+        cover: 'fotos/hospital-universitario-austral/thumbs/cover.jpg',
+        coverPos: 'center 28%',
         items: hospitalItems },
     ],
   },
@@ -310,13 +315,15 @@ let zoomed  = false; // false: la revista descansa sobre la mesa
 // Atributos data-bg del fondo de tapa de un work (los consume loadNear).
 // Para videos: miniatura HD con fallback a la estándar si no existe.
 function workCoverAttrs(work) {
+  // Encuadre opcional de la tapa (p. ej. 'center 45%') para centrar el sujeto.
+  const pos = work.coverPos ? ` style="background-position:${work.coverPos}"` : '';
   // Imagen de tapa propia (pisa la miniatura del primer video/foto).
-  if (work.cover) return `data-bg="url('${work.cover}')"`;
+  if (work.cover) return `data-bg="url('${work.cover}')"${pos}`;
   const img = work.items.find(it => it.type === 'image');
-  if (img) return `data-bg="url('${img.thumb || img.src}')"`;
+  if (img) return `data-bg="url('${img.thumb || img.src}')"${pos}`;
   const vid = work.items.find(it => it.type === 'youtube');
-  if (!vid) return 'data-bg=""';
-  return `data-bg="url('${ytThumbHD(vid.id)}')" data-bg-fallback="url('${ytThumb(vid.id)}')"`;
+  if (!vid) return `data-bg=""${pos}`;
+  return `data-bg="url('${ytThumbHD(vid.id)}')" data-bg-fallback="url('${ytThumb(vid.id)}')"${pos}`;
 }
 const isVideoWork = (work) => work.items.length === 1 && work.items[0].type === 'youtube';
 const playSVG = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`;
@@ -400,7 +407,7 @@ function workHTML(def) {
 
   if (w.variant === 'editorial') {
     return `
-      <div class="pg pg--work v-editorial${vid}" style="--accent:${acc}">
+      <div class="pg pg--work v-editorial${vid}${w.numMini ? ' num-mini' : ''}" style="--accent:${acc}">
         <span class="work-no--ghost display">${w.no}</span>
         <div class="work-frame"><div class="work-img lazy-bg" ${workCoverAttrs(w)}>${play}</div></div>
         <div class="work-col">${workInfoHTML(def)}</div>
@@ -469,8 +476,12 @@ function frontHTML(def, i) {
     case 'divider': {
       const sec = def.section;
       // Sólo works con tapa: los placeholders (sin items) no dejan cuadros vacíos.
-      const thumbs = sec.works.filter(w => w.items.length).slice(0, 3).map(w =>
-        `<div class="divider__thumb lazy-bg" ${workCoverAttrs(w)}></div>`).join('');
+      // `dividerThumb` permite una imagen chica propia para la portada de sección,
+      // distinta de la tapa del trabajo.
+      const thumbs = sec.works.filter(w => w.items.length).slice(0, 3).map(w => {
+        const attrs = w.dividerThumb ? `data-bg="url('${w.dividerThumb}')"` : workCoverAttrs(w);
+        return `<div class="divider__thumb lazy-bg" ${attrs}></div>`;
+      }).join('');
       return `
         <div class="pg pg--divider" style="--accent:${sec.accent}">
           <span class="divider__num display">${pad(def.no)}</span>
@@ -848,10 +859,12 @@ function tileMarkup(item) {
 
 // Mural de un conjunto de items. `lbItems` se fija al set mostrado para que el
 // lightbox (prev/next) navegue dentro de la galería visible.
-function tileGrid(items) {
+function tileGrid(items, asGrid) {
   lbItems = items;
   const grid = document.createElement('div');
-  grid.className = 'masonry';
+  // `asGrid`: grilla ordenada para sets de proporción uniforme (el masonry de
+  // columnas dejaba una columna corta y un hueco al final).
+  grid.className = 'masonry' + (asGrid ? ' masonry--grid' : '');
   items.forEach((item, i) => {
     const el = document.createElement('div');
     el.className = 'masonry__item' + (item.type === 'youtube' || item.type === 'video' ? ' masonry__item--video' : '');
@@ -918,7 +931,7 @@ function openWork(work) {
   } else {
     body.className = 'work__body';
     body.innerHTML = '';
-    body.appendChild(tileGrid(work.items));
+    body.appendChild(tileGrid(work.items, work.gridGallery));
   }
 
   const w = document.getElementById('work');
