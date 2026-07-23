@@ -154,27 +154,27 @@ const comandanteItems = photos('el-comandante', [
 const sections = [
   {
     id: 'videoclips', label: 'Videoclips', nav: 'Videoclips', accent: '#c9a27f',
-    desc: 'Cámara, dirección y color para artistas independientes.',
+    desc: 'Dirección, cámara, montaje y color para artistas independientes.',
     works: [
       // `variant` fijada por página: al insertar trabajos nuevos, la rotación
       // automática corría el estilo de todas las cards siguientes.
-      { title: 'IMPASSE', meta: 'Franco Martínez · Cámara y Montaje', variant: 'full',
-        desc: 'Videoclip para Franco Martínez. Cámara y montaje de una pieza donde la letra guía el pulso visual.',
+      { title: 'IMPASSE', meta: 'Franco Martínez · Dirección, Montaje y Color', variant: 'full',
+        desc: 'Videoclip para Franco Martínez. Dirección, montaje y color para potenciar la atmósfera y la sensibilidad de la obra musical.',
         items: [video('gun39WJyOvc', 'IMPASSE', 'Franco Martínez')] },
-      { title: 'Las Palabras Justas', meta: 'Franco Martínez · Cámara y Montaje', variant: 'full',
-        desc: 'Videoclip para Franco Martínez. Cámara y montaje de una pieza donde la letra guía el pulso visual.',
+      { title: 'Las Palabras Justas', meta: 'Franco Martínez · Producción, Cámara y Montaje', variant: 'full',
+        desc: 'Videoclip para Franco Martínez que acompaña la identidad estética y narrativa de la canción.',
         items: [video('PNRQ6c6GyzQ', 'Las Palabras Justas', 'Franco Martínez')] },
-      { title: '1 Momento', meta: 'Luca Laurito · Dirección y Color', variant: 'splitR',
-        desc: 'Videoclip de Luca Laurito. Dirección y corrección de color para una atmósfera nocturna y cálida.',
+      { title: '1 Momento', meta: 'Luca Laurito · Cámara y Color', variant: 'splitR',
+        desc: 'Videoclip para Luca Laurito. Dirección y corrección de color con una búsqueda cinematográfica.',
         items: [video('0897I0LQ-pE', '1 Momento', 'Luca Laurito')] },
       { title: 'DULCE', meta: 'UNYX · Cámara', variant: 'editorial', numMini: true,
-        desc: 'Videoclip para UNYX. Cámara y registro siguiendo la energía del tema.',
+        desc: 'Videoclip para UNYX. Cámara y registro siguiendo el ritmo de la pieza musical.',
         items: [video('ph-mFOwGMzo', 'DULCE', 'UNYX')] },
       { title: 'POCO Set', meta: 'Majo Chicar · Cámara', variant: 'splitL',
         desc: 'Set audiovisual para Majo Chicar. Cámara en vivo capturando la performance.',
         items: [video('2W9xCTxiQk8', 'POCO Set', 'Majo Chicar')] },
       { title: '2 Minutos', meta: 'Ian Cater & Zohar · Cámara', variant: 'full',
-        desc: 'Videoclip de Ian Cater & Zohar. Cámara y composición de planos al ritmo del track.',
+        desc: 'Videoclip de Ian Cater & Zohar. Cámara de una pieza con una búsqueda visual dinámica.',
         items: [video('Zm7LLhpThlo', '2 Minutos', 'Ian Cater & Zohar')] },
       { title: 'Sabor a Poco', meta: 'Peka Roux · Arte', variant: 'splitR',
         desc: 'Videoclip de Peka Roux. Dirección de arte y construcción del universo visual de la pieza.',
@@ -183,7 +183,7 @@ const sections = [
   },
   {
     id: 'moda', label: 'Moda', nav: 'Moda', accent: '#c98aa6',
-    desc: 'Editoriales y campañas de moda.',
+    desc: 'Campañas de moda, branding y paid media.',
     works: [
       // BAFA — galería con sub-galerías (menú lateral al abrirla). Para cargar
       // los videos de cada sección:
@@ -192,6 +192,7 @@ const sections = [
       //   3) listá cada uno acá: clipBAFA('<seccion>')('slug.mp4', 'Título')
       { title: 'BAFA', meta: 'Contenido audiovisual', circle: true,
         desc: 'Galería de trabajos para BAFA.',
+        galleryDesc: 'Producción, cámara y edición de contenido para BAFA Creadores, la sección editorial de Distrito BAFA.',
         link: { href: 'https://www.distritobafa.com.ar/novedades/categories/bafa-creadores',
                 label: 'Ver en Distrito BAFA' },
         categories: [
@@ -220,7 +221,7 @@ const sections = [
         ],
         items: [] },
       { title: 'López Taibo', meta: 'Marca de calzado · Contenido audiovisual',
-        desc: 'Contenido audiovisual para López Taibo: presentación de modelos y piezas editoriales sobre el oficio del calzado.',
+        desc: 'Producción y edición de contenido audiovisual para branding y paid media. Desarrollo de piezas para redes sociales.',
         variant: 'full', coverSide: true, cover: 'fotos/lopez-taibo/cover.jpg',
         items: lopezTaiboItems },
     ],
@@ -229,45 +230,45 @@ const sections = [
     id: 'cobertura-shows', label: 'Cobertura de Shows', nav: 'Cobertura', accent: '#c9b07f',
     desc: 'Registro fotográfico de shows en vivo.',
     works: [
-      { title: 'Fran Martínez', meta: 'En vivo · La Tangente',
-        desc: 'Cobertura fotográfica del show en La Tangente. Registro en vivo del escenario, la luz y el público.',
+      { title: 'Franco Martínez', meta: 'En vivo · La Tangente',
+        desc: 'Cobertura fotográfica del show en La Tangente. Registro visual del concierto, priorizando el movimiento, la luz y la emoción del momento.',
         dividerThumb: 'fotos/coberturas-portada/thumbs/la-tangente.jpg',
         items: tangenteItems },
-      { title: 'Franco Martínez', meta: 'En vivo · Ladran Sancho',
-        desc: 'Cobertura fotográfica del show en Ladran Sancho. Registro en vivo de la puesta, los gestos y el público.',
+      { title: 'Franco Martínez', meta: 'En vivo · Ladrán Sancho',
+        desc: 'Cobertura fotográfica del show en Ladrán Sancho. Registro de la puesta en escena y la atmósfera del concierto a través de una mirada documental.',
         dividerThumb: 'fotos/coberturas-portada/thumbs/ladran-sancho.jpg',
         items: francoItems },
-      { title: 'Luchi Davit', meta: 'En vivo · The Monkey\'s',
-        desc: 'Cobertura del show en The Monkey\'s. Fotografía de escenario en clave de luz baja y color.',
+      { title: 'Luchi Davit', meta: 'En vivo · The Monkey´s',
+        desc: 'Cobertura fotográfica del show en The Monkey´s. Registro del vivo, capturando la energía del escenario, la iluminación y la conexión con el público.',
         items: luchiItems },
     ],
   },
   {
     id: 'ficciones', label: 'Cortometrajes', nav: 'Cortos', accent: '#8ab0a4',
-    desc: 'Ficción y documental: arte, cámara e iluminación.',
+    desc: 'Ficción y documental: cámara, producción y arte.',
     works: [
-      { title: 'En El Barro', meta: 'Teaser · Cortometraje', variant: 'splitL',
-        desc: 'Teaser del cortometraje «En El Barro».',
+      { title: 'En El Barro', meta: 'Ficción · Cámara', variant: 'splitL',
+        desc: 'Cámara para teaser de cortometraje. Tesis universitaria en Facultad de Arquitectura, Diseño y Urbanismo, UBA.',
         cover: 'fotos/en-el-barro/posters/teaser-en-el-barro.jpg',
         items: [clipBarro('teaser-en-el-barro.mp4', 'Teaser — En El Barro')] },
       { title: 'Acumuladores', meta: 'Documental · Producción y Cámara', variant: 'full',
-        desc: 'Documental. Producción y cámara de un retrato observacional.',
+        desc: 'Producción y cámara de un retrato observacional sobre diferentes casos del trastorno obsesivo-compulsivo. Documental para Facultad de Arquitectura, Diseño y Urbanismo, UBA.',
         items: [video('RzHyFfUYjfw', 'Acumuladores', 'Documental')] },
-      { title: 'El Comandante', meta: 'Cortometraje · Dirección de Arte', variant: 'splitR',
-        desc: 'Cortometraje. Dirección de arte: diseño de los espacios y objetos que habitan la escena.',
+      { title: 'El Comandante', meta: 'Ficción · Dirección de Arte', variant: 'splitR',
+        desc: 'Diseño de escenografía, vestuario y maquillaje para cortometraje universitario en Facultad de Arquitectura, Diseño y Urbanismo, UBA.',
         cover: 'fotos/el-comandante/thumbs/6b54fb238195039.690ff9183aa74.webp',
         coverPos: '57% center',
         gridGallery: true, // fotos de proporción uniforme: grilla ordenada, sin hueco
         items: comandanteItems },
-      { title: 'Plan Hormiga', meta: 'Cortometraje', variant: 'full',
-        desc: 'Cortometraje «Plan Hormiga».',
+      { title: 'Plan Hormiga', meta: 'Ficción · Cámara', variant: 'full',
+        desc: 'Cámara para cortometraje universitario en Facultad de Arquitectura, Diseño y Urbanismo, UBA.',
         cover: 'fotos/plan-hormiga/posters/plan-hormiga.jpg',
         items: [clipHormiga('plan-hormiga.mp4', 'Plan Hormiga')] },
     ],
   },
   {
     id: 'instituciones', label: 'Instituciones', nav: 'Instituciones', accent: '#8aa6c9',
-    desc: 'Contenido audiovisual para instituciones.',
+    desc: 'Edición de video y contenido de redes sociales para el Hospital Universitario Austral.',
     works: [
       { title: 'Hospital Universitario Austral', meta: 'Contenido institucional · Edición de video',
         desc: 'Piezas para el Hospital Universitario Austral: «SaNar: salidas a la naturaleza» y contenido para redes. Edición de video.',
@@ -477,9 +478,9 @@ function frontHTML(def, i) {
           <div class="about__inner">
             <span class="kicker">Sobre mí</span>
             <h2 class="about-title display">HOLA,<br>SOY MARTINA</h2>
-            <p class="about__bio">Realizadora audiovisual y fotógrafa. Trabajo entre el videoclip, la
-              cobertura de shows en vivo y la ficción, buscando imágenes con identidad, textura y una
-              estética cuidada.</p>
+            <p class="about__bio">Realizadora audiovisual y fotógrafa, con experiencia en dirección,
+              cámara y montaje. Exploro la narrativa visual a través del videoclip, la ficción y el
+              contenido comercial, combinando sensibilidad estética con una mirada técnica.</p>
             <ul class="about__tags">
               <li>Cámara</li><li>Dirección</li><li>Dirección de Arte</li>
               <li>Color</li><li>Fotografía</li><li>Montaje</li>
@@ -896,7 +897,9 @@ function openWork(work) {
   document.getElementById('workEyebrow').textContent = work.section ? work.section.label : '';
   document.getElementById('workTitle').textContent   = work.title;
   document.getElementById('workMeta').textContent    = work.meta || '';
-  document.getElementById('workDesc').textContent    = work.desc || '';
+  // `galleryDesc`: texto propio para el encabezado de la galería, cuando debe
+  // decir algo distinto al de la página del trabajo.
+  document.getElementById('workDesc').textContent    = work.galleryDesc || work.desc || '';
 
   const body = document.getElementById('workBody');
   if (work.categories) {
