@@ -968,6 +968,11 @@ body.is-table .book::after  { opacity: 1; }
   position: sticky; top: 0; z-index: 5;
   display: flex; align-items: flex-start; justify-content: space-between;
   gap: 24px;
+  /* Mismo contenedor centrado que .work__body (1400px + igual padding): así el
+     borde derecho del botón "Volver a la revista" queda alineado con el final de
+     los videos, y no pegado al borde de la pantalla en monitores anchos. */
+  max-width: 1400px;
+  margin: 0 auto;
   padding: 30px clamp(20px, 5vw, 64px);
   background: linear-gradient(to bottom, rgba(6,6,6,0.97), rgba(6,6,6,0));
 }
@@ -1209,6 +1214,20 @@ body.is-table .book::after  { opacity: 1; }
   .ctrl--prev { left: 10px; }
   .ctrl--next { right: 10px; }
 
+  /* Índice y Contacto en el celu: la card es alta y angosta (retrato), muy
+     distinta a la card ancha de PC. Los tamaños base van en `cqw` (ancho), que
+     en la card angosta quedan chicos y dejan la card medio vacía. Acá escalamos
+     con base en la ALTURA (`cqh`) para llenarla; los labels se topan por ancho
+     con `min(…cqw)` para no desbordar en pantallas angostas. */
+  .toc-title { font-size: min(9.5cqh, 14cqw); margin-bottom: 4cqh; }
+  .toc2__item { padding: 4.3cqh 0; }
+  .toc2__n { font-size: 2.2cqw; width: 5.5cqw; }
+  .toc2__label { font-size: min(5cqh, 5.6cqw); }
+
+  .thanks-title { font-size: min(13cqh, 15cqw); }
+  .thanks__contact { margin-top: 6cqh; }
+  .thanks__email { font-size: min(3.4cqh, 4.2cqw); }
+
   /* is-side en el celu: la columna al 58% queda muy angosta — el texto pasa a
      banda inferior con oscurecido de abajo, y la foto se ve arriba. */
   .v-full.is-side .work-foot {
@@ -1266,18 +1285,23 @@ body.is-table .book::after  { opacity: 1; }
   }
   .cat-nav__btn.is-active { border-left-color: transparent; border-bottom-color: var(--accent); }
 
-  .work__bar { flex-direction: column; gap: 14px; padding: 22px 20px; }
-  /* "Volver a la revista": botón flotante abajo y centrado */
+  /* En el celu: la fila con la flecha de regreso a la izquierda y los textos al lado. */
+  .work__bar { flex-direction: row; align-items: flex-start; gap: 12px; padding: 18px 16px; }
+  /* "Volver a la revista" pasa a ser una flecha ← arriba a la izquierda, junto
+     a los textos (se oculta el texto con font-size:0 y se dibuja la flecha). */
   .work__close {
-    position: fixed;
-    left: 50%;
-    bottom: calc(14px + env(safe-area-inset-bottom));
-    transform: translateX(-50%);
-    z-index: 20;
-    box-shadow: 0 8px 26px rgba(0,0,0,0.45);
+    order: -1;                /* antes del heading → queda a la izquierda */
+    position: static;
+    transform: none;
+    flex-shrink: 0;
+    width: 40px; height: 40px; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    font-size: 0;             /* oculta "Volver a la revista ✕" */
   }
-  /* Aire extra para que el botón flotante no tape las últimas fotos */
-  .work__body { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+  .work__close::before { content: '\2190'; font-size: 20px; letter-spacing: 0; } /* ← */
+  /* Ya no hay botón flotante abajo: alcanza con el aire normal. */
+  .work__body { padding-bottom: calc(40px + env(safe-area-inset-bottom)); }
   .masonry { columns: 2; column-gap: 8px; }
   .masonry__item { margin-bottom: 8px; }
 
