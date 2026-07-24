@@ -1008,6 +1008,10 @@ function renderLightbox() {
   } else {
     media.innerHTML = `<img src="${item.src}" alt="${label}" decoding="async" />`;
   }
+  // `is-video`: en mobile los controles nativos del reproductor ocupan las
+  // esquinas del video; con esta clase el CSS corre la ✕ y las flechas fuera de
+  // esa zona para que no se solapen (ver bloque responsive del lightbox).
+  document.getElementById('lightbox').classList.toggle('is-video', item.type === 'video' || item.type === 'youtube');
   const metaText = item.meta ? `${label} — ${item.meta}` : label;
   caption.textContent = `${metaText}  ·  ${lbIndex + 1} / ${lbItems.length}`;
 }

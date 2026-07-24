@@ -345,23 +345,31 @@ body.is-table .book::after  { opacity: 1; }
 }
 
 /* ── ÍNDICE ── */
+/* container-type: size → los tamaños de abajo van en `cqw` (1cqw = 1% del ancho
+   de la página) y el padding en %, así todo escala en proporción a la página.
+   Antes, con clamps en `vw` y pisos en px, al achicar el escenario (zoom o
+   pantallas chicas) el contenido quedaba más alto que la página y se recortaba
+   arriba y abajo. */
 .pg--toc {
+  container-type: size;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: clamp(40px, 7vw, 84px);
+  /* Menos padding vertical que horizontal: el índice (título + 7 ítems) llenaba
+     casi toda la altura y así entra con margen a cualquier tamaño. */
+  padding: 4.5% 6.5%;
 }
 .toc-title {
-  font-size: clamp(44px, 8vw, 104px);
+  font-size: 9.65cqw;
   color: var(--cream);
-  margin-bottom: clamp(20px, 3vw, 36px);
+  margin-bottom: 3.34cqw;
 }
 .toc2 { list-style: none; }
 .toc2__item {
   display: flex;
   align-items: baseline;
-  gap: 20px;
-  padding: clamp(10px, 1.6vw, 18px) 0;
+  gap: 1.85cqw;
+  padding: 1.67cqw 0;
   border-top: 1px solid var(--line);
   cursor: pointer;
   transition: padding-left var(--transition), color var(--transition);
@@ -370,15 +378,15 @@ body.is-table .book::after  { opacity: 1; }
 .toc2__item:hover { padding-left: 12px; color: var(--white); }
 .toc2__item:hover .toc2__n { color: var(--accent); }
 .toc2__n {
-  font-size: 12px;
+  font-size: 1.11cqw;
   font-weight: 700;
   letter-spacing: 0.1em;
   color: var(--muted);
-  width: 28px;
+  width: 2.6cqw;
   flex-shrink: 0;
 }
 .toc2__label {
-  font-size: clamp(20px, 3.4vw, 34px);
+  font-size: 3.15cqw;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: -0.01em;
@@ -804,23 +812,27 @@ body.is-table .book::after  { opacity: 1; }
 }
 
 /* ── CONTACTO ── */
+/* Mismo criterio que el índice: container-type + `cqw`/`%` para que el bloque
+   escale con la página y no se recorte al achicar el escenario (zoom o pantallas
+   chicas). */
 .pg--thanks {
+  container-type: size;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: clamp(40px, 7vw, 88px);
+  padding: 6.8%;
   background: radial-gradient(80% 80% at 50% 30%, #161412 0%, #090807 75%);
 }
 .thanks-title {
-  /* Más chico que el «GRACIAS.» anterior (240px): la frase es el doble de
-     larga y a ese cuerpo se desbordaba del ancho de la página. */
-  font-size: clamp(44px, 10vw, 150px);
+  /* Más chico que el «GRACIAS.» anterior: la frase es el doble de larga y a ese
+     cuerpo se desbordaba del ancho de la página. */
+  font-size: 12.3cqw;
   color: var(--cream);
   line-height: 1.02; /* aire entre «TRABAJEMOS» y «JUNTOS» */
 }
-.thanks__contact { margin-top: clamp(24px, 4vw, 44px); }
+.thanks__contact { margin-top: 4.1cqw; }
 .thanks__email {
-  font-size: clamp(16px, 2.2vw, 24px);
+  font-size: 2.24cqw;
   font-weight: 700;
   color: var(--accent);
   text-decoration: none;
@@ -829,12 +841,12 @@ body.is-table .book::after  { opacity: 1; }
   transition: border-color var(--transition);
 }
 .thanks__email:hover { border-color: var(--accent); }
-.thanks__socials { margin-top: 26px; display: flex; gap: 28px; }
+.thanks__socials { margin-top: 2.43cqw; display: flex; gap: 2.61cqw; }
 .thanks__socials a {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  font-size: 14px;
+  gap: 0.84cqw;
+  font-size: 1.31cqw;
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -843,16 +855,16 @@ body.is-table .book::after  { opacity: 1; }
   padding: 4px 0;
   transition: color var(--transition);
 }
-.thanks__socials a svg { width: 17px; height: 17px; flex-shrink: 0; }
+.thanks__socials a svg { width: 1.59cqw; height: 1.59cqw; flex-shrink: 0; }
 .thanks__socials a:hover { color: var(--cream); }
 
 /* Link a Muna Films con su logo (SVG que hereda el color del texto) */
 .thanks__muna {
-  margin-top: 48px;
+  margin-top: 4.48cqw;
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  font-size: 12px;
+  gap: 1.12cqw;
+  font-size: 1.12cqw;
   font-weight: 700;
   letter-spacing: 0.24em;
   text-transform: uppercase;
@@ -860,7 +872,7 @@ body.is-table .book::after  { opacity: 1; }
   text-decoration: none;
   transition: color var(--transition);
 }
-.thanks__muna svg { width: 40px; height: auto; flex-shrink: 0; }
+.thanks__muna svg { width: 3.73cqw; height: auto; flex-shrink: 0; }
 .thanks__muna:hover { color: var(--cream); }
 
 /* ════════════════════════════════════════════════════════════
@@ -1272,6 +1284,37 @@ body.is-table .book::after  { opacity: 1; }
   .lightbox__prev { left: 8px; font-size: 22px; }
   .lightbox__next { right: 8px; font-size: 22px; }
   .lightbox__close { top: 16px; right: 16px; }
+
+  /* Video en el lightbox: en el celu los controles nativos del reproductor
+     ocupan las esquinas (volumen, pantalla completa, PiP) y el centro (saltos).
+     Achicamos un poco el video para dejar una franja negra arriba y abajo, y
+     llevamos la ✕ arriba y las flechas abajo —con fondo, como botones— para que
+     no se solapen con esos controles. Las imágenes no se tocan. */
+  .lightbox.is-video .lightbox__clip { max-height: 66vh; }
+  .lightbox.is-video .lightbox__close,
+  .lightbox.is-video .lightbox__prev,
+  .lightbox.is-video .lightbox__next {
+    width: 44px; height: 44px; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(18,16,14,0.78);
+    border-radius: 50%;
+    color: var(--cream);
+    -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  }
+  .lightbox.is-video .lightbox__close {
+    top: calc(8px + env(safe-area-inset-top)); right: 14px; font-size: 16px;
+  }
+  .lightbox.is-video .lightbox__prev,
+  .lightbox.is-video .lightbox__next {
+    top: auto; transform: none;
+    bottom: calc(14px + env(safe-area-inset-bottom)); font-size: 22px;
+  }
+  .lightbox.is-video .lightbox__prev { left: 18px; }
+  .lightbox.is-video .lightbox__next { right: 18px; }
+  /* La leyenda sube y queda centrada entre las dos flechas. */
+  .lightbox.is-video .lightbox__caption {
+    bottom: calc(70px + env(safe-area-inset-bottom));
+  }
 
   /* Contacto: en el celu la página es ~1/3 del ancho de PC — los botones
      con px fijos de desktop desbordaban. */
