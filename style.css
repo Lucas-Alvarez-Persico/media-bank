@@ -395,16 +395,37 @@ body.is-table .book::after  { opacity: 1; }
 .toc2__line { flex: 1; border-bottom: 1px dotted rgba(242,236,225,0.2); transform: translateY(-5px); }
 
 /* ── SOBRE MÍ ── */
-.pg--about { display: flex; }
+.pg--about { display: flex; background: #080807; }
+/* La foto arranca a la derecha (no ocupa todo el ancho): la franja izquierda
+   queda negra y el texto se lee sobre ella. `background-position` bajo muestra
+   la parte izquierda de la propia foto. */
 .about__bg {
-  position: absolute; inset: 0;
-  background-size: cover; background-position: 10% center;
-  filter: grayscale(0.4) contrast(1.05) brightness(0.5);
+  position: absolute; top: 0; right: 0; bottom: 0; left: 44%;
+  /* 178.57% = 100/56: la foto se dibuja del tamaño que tendría a lo ancho de
+     toda la página, así el zoom es idéntico al original aunque el recuadro sea
+     más angosto (con `cover` a secas se reescalaba y perdía zoom). */
+  background-size: 178.57% auto;
+  /* Corrida a la derecha: se ve la parte izquierda de la foto (la cámara). */
+  background-position: 3% center;
+  background-repeat: no-repeat;
+  /* brightness 0.68 (antes 0.5): la cámara cae justo donde se apilan el
+     gradiente, la sombra y la máscara, y quedaba ilegible. */
+  filter: grayscale(0.4) contrast(1.05) brightness(0.68);
+  /* Desvanecido largo del borde izquierdo hacia la transparencia: la foto se
+     funde con el negro de la página en vez de cortarse con una línea. */
+  -webkit-mask-image: linear-gradient(100deg, transparent 0%, rgba(0,0,0,0.34) 20%, rgba(0,0,0,0.82) 40%, #000 56%);
+          mask-image: linear-gradient(100deg, transparent 0%, rgba(0,0,0,0.34) 20%, rgba(0,0,0,0.82) 40%, #000 56%);
 }
+/* Difumina el borde izquierdo de la foto contra el negro (sin línea dura) y
+   mantiene el oscurecido general. */
 .about__bg::after {
   content: '';
   position: absolute; inset: 0;
-  background: linear-gradient(100deg, rgba(8,8,7,0.96) 30%, rgba(8,8,7,0.55) 100%);
+  /* Oscurecido general + sombra profunda contra el borde izquierdo, para que el
+     blend con el negro tenga peso y no se vea plano. */
+  background:
+    linear-gradient(100deg, #080807 0%, rgba(8,8,7,0.72) 26%, rgba(8,8,7,0.34) 100%);
+  box-shadow: inset 120px 0 130px -70px rgba(5,5,5,0.8);
 }
 .about__inner {
   position: relative;
@@ -1259,6 +1280,19 @@ body.is-table .book::after  { opacity: 1; }
 
   .divider__main { max-width: 100%; }
   .divider__thumbs { display: none; }
+
+  /* Sobre mí en el celu: la card es angosta y con la foto corrida a la derecha
+     quedaría una tira finita — se mantiene a sangre completa, como antes. */
+  .about__bg {
+    left: 0; background-size: cover; background-position: 10% center;
+    -webkit-mask-image: none; mask-image: none;
+    /* Acá el texto va encima de la foto: se mantiene el oscurecido original. */
+    filter: grayscale(0.4) contrast(1.05) brightness(0.5);
+  }
+  .about__bg::after {
+    background: linear-gradient(100deg, rgba(8,8,7,0.96) 30%, rgba(8,8,7,0.55) 100%);
+    box-shadow: none;
+  }
 
   /* "Dejar en la mesa": abajo y centrado (arriba tapaba y quedaba lejos del pulgar) */
   .zoomout {
