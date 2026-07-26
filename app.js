@@ -32,10 +32,12 @@ const photos = (dir, files, title, meta = '') =>
 
 const francoItems = photos('franco-ladran-sancho', [
   '07ae18244794795.699f38d5bba80.webp', '0cc4de244794795.699f38d5b8347.webp',
-  '114850244794795.699f38d5be551.webp', '20b13b244794795.699f38d5ba1e7.webp',
+  // La 4.ª es la celda ancha de la portada: va una horizontal (una vertical
+  // quedaba recortada por la mitad de la cara).
+  '114850244794795.699f38d5be551.webp', '58738d244794795.699f38d5b5a03.webp',
   '291909244794795.699f38d5b78d7.webp', '2ec37e244794795.699f38d5bc2c1.webp',
   '35f695244794795.699f38d5bd3f5.webp', '4f5e58244794795.699f38d5c08a3.webp',
-  '541cb8244794795.699f38d5bfb29.webp', '58738d244794795.699f38d5b5a03.webp',
+  '541cb8244794795.699f38d5bfb29.webp', '20b13b244794795.699f38d5ba1e7.webp',
   '5c5f29244794795.699f38d5b6ebe.webp', '66d060244794795.699f38d5bb239.webp',
   '6ab9e8244794795.699f38d5c0076.webp', '716a1d244794795.699f38d5bf43a.webp',
   '757902244794795.699f38d5b5068.webp', '87b003244794795.699f38d5b8e97.webp',
@@ -74,10 +76,11 @@ const tangenteItems = photos('franco-la-tangente', [
 
 const luchiItems = photos('luchi-davit', [
   '6adfdf233853197.68b7c3d0b9f95.webp', '8c54bd233853197.68b7c3d0bc356.webp',
-  '9ef3d6233853197.68b7c3d0bbdb8.webp', 'b1b9fc233853197.68b7c3d0bdb96.webp',
+  // Misma idea que en Ladrán Sancho: la 4.ª (celda ancha) va horizontal.
+  '9ef3d6233853197.68b7c3d0bbdb8.webp', 'e6e85b233853197.68b7c3d0bb692.webp',
   'bc8dee233853197.68b7c3d0bf343.webp', 'bfd6a5233853197.68b7c3d0bebba.webp',
   'c33cbd233853197.68b7c3d0ba764.webp', 'd0f929233853197.68b7c3d0c01c2.webp',
-  'dc8b63233853197.68b7c3d0c0939.webp', 'e6e85b233853197.68b7c3d0bb692.webp',
+  'dc8b63233853197.68b7c3d0c0939.webp', 'b1b9fc233853197.68b7c3d0bdb96.webp',
   'f3a89c233853197.68b7c3d0c15ad.webp', 'f5b11b233853197.68b7c3d0c1fa2.webp',
   'f5f30f233853197.68b7c3d0c2e8d.webp',
 ], 'Luchi Davit', 'En vivo · The Monkey\'s');
@@ -166,15 +169,19 @@ const sections = [
         items: [video('PNRQ6c6GyzQ', 'Las Palabras Justas', 'Franco Martínez')] },
       { title: '1 Momento', meta: 'Luca Laurito · Cámara y Color', variant: 'splitR',
         desc: 'Videoclip para Luca Laurito. Dirección y corrección de color con una búsqueda cinematográfica.',
+        cover: 'fotos/tapas/thumbs/1-momento.jpg',
         items: [video('0897I0LQ-pE', '1 Momento', 'Luca Laurito')] },
       { title: 'DULCE', meta: 'UNYX · Cámara', variant: 'editorial', numMini: true,
         desc: 'Videoclip para UNYX. Cámara y registro siguiendo el ritmo de la pieza musical.',
+        cover: 'fotos/tapas/thumbs/dulce.jpg',
         items: [video('ph-mFOwGMzo', 'DULCE', 'UNYX')] },
       { title: 'POCO Set', meta: 'Majo Chicar · Cámara', variant: 'splitL',
         desc: 'Set audiovisual para Majo Chicar. Cámara en vivo capturando la performance.',
+        cover: 'fotos/tapas/thumbs/poco-set.jpg',
         items: [video('2W9xCTxiQk8', 'POCO Set', 'Majo Chicar')] },
       { title: '2 Minutos', meta: 'Ian Cater & Zohar · Cámara', variant: 'full',
         desc: 'Videoclip de Ian Cater & Zohar. Cámara de una pieza con una búsqueda visual dinámica.',
+        cover: 'fotos/tapas/thumbs/2-minutos.jpg',
         items: [video('Zm7LLhpThlo', '2 Minutos', 'Ian Cater & Zohar')] },
       { title: 'Sabor a Poco', meta: 'Peka Roux · Arte', variant: 'splitR',
         desc: 'Videoclip de Peka Roux. Dirección de arte y construcción del universo visual de la pieza.',
@@ -247,9 +254,9 @@ const sections = [
     id: 'ficciones', label: 'Cortometrajes', nav: 'Cortos', accent: '#8ab0a4',
     desc: 'Ficción y documental: cámara, producción y arte.',
     works: [
-      { title: 'En El Barro', meta: 'Ficción · Cámara', variant: 'splitL',
+      { title: 'En El Barro', meta: 'Ficción · Cámara', variant: 'full',
         desc: 'Cámara para teaser de cortometraje. Tesis universitaria en Facultad de Arquitectura, Diseño y Urbanismo, UBA.',
-        cover: 'fotos/en-el-barro/posters/teaser-en-el-barro.jpg',
+        cover: 'fotos/en-el-barro/thumbs/cover.jpg',
         items: [clipBarro('teaser-en-el-barro.mp4', 'Teaser — En El Barro')] },
       { title: 'Acumuladores', meta: 'Documental · Producción y Cámara', variant: 'full',
         desc: 'Producción y cámara de un retrato observacional sobre diferentes casos del trastorno obsesivo-compulsivo. Documental para Facultad de Arquitectura, Diseño y Urbanismo, UBA.',
@@ -262,7 +269,7 @@ const sections = [
         items: comandanteItems },
       { title: 'Plan Hormiga', meta: 'Ficción · Cámara', variant: 'full',
         desc: 'Cámara para cortometraje universitario en Facultad de Arquitectura, Diseño y Urbanismo, UBA.',
-        cover: 'fotos/plan-hormiga/posters/plan-hormiga.jpg',
+        cover: 'fotos/plan-hormiga/thumbs/cover.jpg',
         items: [clipHormiga('plan-hormiga.mp4', 'Plan Hormiga')] },
     ],
   },
