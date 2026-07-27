@@ -259,7 +259,7 @@ const sections = [
     ],
   },
   {
-    id: 'ficciones', label: 'Cortometrajes', nav: 'Cortos', accent: '#8ab0a4',
+    id: 'cortometrajes', label: 'Cortometrajes', nav: 'Cortos', accent: '#8ab0a4',
     desc: 'Ficción y documental: cámara, producción y arte.',
     works: [
       { title: 'En El Barro', meta: 'Ficción · Cámara', variant: 'full',
@@ -328,6 +328,53 @@ secNo++;
 const thankIndex = pageDefs.length;
 pageDefs.push({ type: 'thankyou' });
 indexEntries.push({ n: pad(secNo), label: 'Contacto', nav: 'Contacto', target: thankIndex, accent: NEUTRAL_ACCENT });
+
+// ── Rutas (#/seccion/proyecto) ──────────────────────────────────────────────
+// Cada página tiene su propia URL para poder compartir un link directo a un
+// proyecto. Van en el hash porque el sitio es estático (GitHub Pages): así no
+// hace falta ninguna regla de servidor.
+const slugify = (s) => (s || '')
+  .normalize('NFD').replace(/[\u0300-\u036f]/g, '')   // saca acentos: Ladrán → ladran
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/^-+|-+$/g, '');
+
+(() => {
+  // Títulos repetidos (los dos shows de «Franco Martínez») llevan el dato que
+  // los distingue —la última parte del meta— en AMBAS rutas, no sólo en la
+  // segunda, para que ninguna quede con el nombre "pelado".
+  const veces = {};
+  pageDefs.forEach(d => {
+    if (d.type !== 'work') return;
+    const s = slugify(d.work.title);
+    veces[s] = (veces[s] || 0) + 1;
+  });
+
+  const usadas = new Set();
+  const unica = (base) => {
+    let r = base, n = 2;
+    while (usadas.has(r)) r = `${base}-${n++}`;
+    usadas.add(r);
+    return r;
+  };
+
+  pageDefs.forEach(def => {
+    if (def.type === 'cover')         { def.route = ''; return; }
+    if (def.type === 'toc')           { def.route = unica('indice'); return; }
+    if (def.type === 'about')         { def.route = unica('sobre-mi'); return; }
+    if (def.type === 'thankyou')      { def.route = unica('contacto'); return; }
+    if (def.type === 'divider')       { def.route = unica(def.section.id); return; }
+    if (def.type === 'work') {
+      const w = def.work;
+      let slug = slugify(w.title);
+      if (veces[slug] > 1) {
+        const cola = slugify((w.meta || '').split('·').pop());
+        if (cola) slug += '-' + cola;
+      }
+      def.route = unica(`${def.section.id}/${slug}`);
+    }
+  });
+})();
 
 // ── Estado ──────────────────────────────────────────────────────────────────
 let pages   = [];
@@ -838,10 +885,55 @@ function flipTo(target) {
   book.classList.toggle('is-closed', cur === 0);
   updateChrome();
   updateTopnav();
+  if (!desdeHistorial) syncRoute(false);
 }
 
 function go(dir)        { flipTo(cur + dir); }
 function goToPage(target) { flipTo(target); }
+
+// ── URL ↔ página ────────────────────────────────────────────────────────────
+// Al pasar de hoja se reescribe la URL, y al entrar por un link se abre
+// directamente en esa página. Además el atrás/adelante del navegador funciona.
+let desdeHistorial = false; // navegación disparada por el historial: no re-apilar
+
+const indiceDeRuta = (hash) => {
+  const r = (hash || '').replace(/^#\/?/, '').replace(/\/+$/, '');
+  if (!r) return 0;
+  return pageDefs.findIndex(d => d.route === decodeURIComponent(r));
+};
+
+function syncRoute(reemplazar) {
+  const r = pageDefs[cur] && pageDefs[cur].route;
+  const url = r ? '#/' + r : location.pathname + location.search;
+  try {
+    history[reemplazar ? 'replaceState' : 'pushState']({ i: cur }, '', url);
+  } catch (e) { /* file:// no permite history API; la revista igual funciona */ }
+}
+
+function navegarDesdeURL() {
+  const i = indiceDeRuta(location.hash);
+  if (i < 0) { syncRoute(true); return; } // ruta inexistente: corrige la barra
+  if (i === cur) return;
+  desdeHistorial = true;
+  if (!zoomed) setZoom(true);
+  flipTo(i);
+  desdeHistorial = false;
+}
+
+// Link compartido: entra ya en modo lectura y en la página pedida, sin la
+// intro de la revista sobre la mesa (y sin animar el acercamiento).
+function aplicarRutaInicial() {
+  const i = indiceDeRuta(location.hash);
+  if (i > 0) {
+    document.body.classList.add('no-anim');
+    cur = i;
+    layout();
+    setZoom(true);
+    requestAnimationFrame(() => requestAnimationFrame(
+      () => document.body.classList.remove('no-anim')));
+  }
+  syncRoute(true); // normaliza la barra de direcciones (incluye hash inválido)
+}
 
 function updateChrome() {
   const hide = (cur === 0) || !zoomed; // en la portada o sobre la mesa no hay flechas
@@ -1137,6 +1229,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initSwipe();
   initZoom();
   initCatNavAutoHide();
+  aplicarRutaInicial();
+  window.addEventListener('popstate', navegarDesdeURL);   // atrás / adelante
+  window.addEventListener('hashchange', navegarDesdeURL); // URL editada a mano
 
   document.getElementById('navPrev').addEventListener('click', () => go(-1));
   document.getElementById('navNext').addEventListener('click', () => go(1));
