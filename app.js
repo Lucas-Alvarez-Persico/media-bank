@@ -170,6 +170,7 @@ const sections = [
       { title: '1 Momento', meta: 'Luca Laurito · Cámara y Color', variant: 'splitR',
         desc: 'Videoclip para Luca Laurito. Dirección y corrección de color con una búsqueda cinematográfica.',
         cover: 'fotos/tapas/thumbs/1-momento.jpg',
+        coverPos: '18% center', // corrida a la derecha: entra el barrendero completo
         items: [video('0897I0LQ-pE', '1 Momento', 'Luca Laurito')] },
       { title: 'DULCE', meta: 'UNYX · Cámara', variant: 'editorial', numMini: true,
         desc: 'Videoclip para UNYX. Cámara y registro siguiendo el ritmo de la pieza musical.',
@@ -178,6 +179,7 @@ const sections = [
       { title: 'POCO Set', meta: 'Majo Chicar · Cámara', variant: 'splitL',
         desc: 'Set audiovisual para Majo Chicar. Cámara en vivo capturando la performance.',
         cover: 'fotos/tapas/thumbs/poco-set.jpg',
+        coverPos: '42% center', // la cantante está a la izquierda del centro de la foto
         items: [video('2W9xCTxiQk8', 'POCO Set', 'Majo Chicar')] },
       { title: '2 Minutos', meta: 'Ian Cater & Zohar · Cámara', variant: 'full',
         desc: 'Videoclip de Ian Cater & Zohar. Cámara de una pieza con una búsqueda visual dinámica.',

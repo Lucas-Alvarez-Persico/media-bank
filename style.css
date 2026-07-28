@@ -405,12 +405,12 @@ body.is-table .book::after  { opacity: 1; }
    la parte izquierda de la propia foto. */
 .about__bg {
   position: absolute; top: 0; right: 0; bottom: 0; left: 44%;
-  /* 178.57% = 100/56: la foto se dibuja del tamaño que tendría a lo ancho de
-     toda la página, así el zoom es idéntico al original aunque el recuadro sea
-     más angosto (con `cover` a secas se reescalaba y perdía zoom). */
-  background-size: 178.57% auto;
-  /* Corrida a la derecha: se ve la parte izquierda de la foto (la cámara). */
-  background-position: 3% center;
+  /* 125% del ancho del recuadro = un `cover` con un 25% de acercamiento, para
+     que la figura tenga presencia y el equipo de cámara se lea. */
+  background-size: 125% auto;
+  /* Encuadre: ella hacia la derecha (zona clara) y el rig entrando en el
+     desvanecido de la izquierda. */
+  background-position: 35% 35%;
   background-repeat: no-repeat;
   /* brightness 0.68 (antes 0.5): la cámara cae justo donde se apilan el
      gradiente, la sombra y la máscara, y quedaba ilegible. */
@@ -1292,7 +1292,7 @@ body.is-table .book::after  { opacity: 1; }
   /* Sobre mí en el celu: la card es angosta y con la foto corrida a la derecha
      quedaría una tira finita — se mantiene a sangre completa, como antes. */
   .about__bg {
-    left: 0; background-size: cover; background-position: 10% center;
+    left: 0; background-size: cover; background-position: center;
     -webkit-mask-image: none; mask-image: none;
     /* Acá el texto va encima de la foto: se mantiene el oscurecido original. */
     filter: grayscale(0.4) contrast(1.05) brightness(0.5);
