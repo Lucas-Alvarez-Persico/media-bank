@@ -199,7 +199,8 @@ const sections = [
       //   1) poné los .mp4 en fotos/bafa-<seccion>/ (arte, hoteleria, joyeria, moda)
       //   2) comprimí + poster con el script apuntándolo a esa carpeta
       //   3) listá cada uno acá: clipBAFA('<seccion>')('slug.mp4', 'Título')
-      { title: 'BAFA', meta: 'Contenido audiovisual', circle: true,
+      { title: 'BAFA', meta: 'Contenido audiovisual',
+        variant: 'full', coverSide: true, cover: 'fotos/bafa/cover.jpg',
         desc: 'Galería de trabajos para BAFA.',
         galleryDesc: 'Producción, cámara y edición de contenido para BAFA Creadores, la sección editorial de Distrito BAFA.',
         link: { href: 'https://www.distritobafa.com.ar/novedades/categories/bafa-creadores',
@@ -412,12 +413,16 @@ function workInfoHTML(def) {
   const w = def.work;
   // Los videos no llevan link: la miniatura con el play alcanza.
   const cta = isVideoWork(w) ? '' : `<span class="work-cta">Ver galería &#8594;</span>`;
+  // Link al sitio del cliente, si el trabajo lo tiene (p. ej. Distrito BAFA).
+  const ext = w.link
+    ? `<a class="work-extlink" href="${w.link.href}" target="_blank" rel="noopener">${w.link.label} &#8599;</a>`
+    : '';
   return `
     <span class="kicker accent">${def.section.label}</span>
     <h2 class="work-title display">${w.title}</h2>
     <span class="work-meta">${w.meta || ''}</span>
     <p class="work-desc">${w.desc || ''}</p>
-    ${cta}`;
+    ${cta}${ext}`;
 }
 
 function workHTML(def) {

@@ -626,6 +626,20 @@ body.is-table .book::after  { opacity: 1; }
   padding: clamp(32px, 5vw, 72px);
 }
 
+/* Link al sitio del cliente dentro del bloque de texto de una página de trabajo.
+   El `.work-extlink` base es negro (vive sobre el círculo blanco de la tarjeta
+   BAFA); acá va sobre foto oscurecida, así que se pasa a crema. */
+.work-foot .work-extlink {
+  align-self: flex-start;
+  margin-top: 18px;
+  color: var(--cream-dim);
+  border-bottom-color: rgba(242, 236, 225, 0.32);
+}
+.work-foot .work-extlink:hover { color: var(--accent); border-bottom-color: var(--accent); }
+/* Al apuntar el link externo, «Ver galería» vuelve a blanco: deja claro que ese
+   click lleva al sitio del cliente y no abre la galería. */
+.work-foot:has(.work-extlink:hover) .work-cta { color: var(--cream); }
+
 /* Variante SPLIT: media columna texto / media columna foto */
 .v-split { display: grid; grid-template-columns: 1fr 1fr; }
 .v-split .work-col {
@@ -1292,13 +1306,22 @@ body.is-table .book::after  { opacity: 1; }
   /* Sobre mí en el celu: la card es angosta y con la foto corrida a la derecha
      quedaría una tira finita — se mantiene a sangre completa, como antes. */
   .about__bg {
-    left: 0; background-size: cover; background-position: center;
+    left: 0;
+    /* 144% del ancho de la card = un `cover` con algo de acercamiento, para
+       tener margen y correr la foto: con `cover` a secas casi no hay recorte
+       lateral y la figura no se podía mover. */
+    background-size: 144% auto;
+    /* Corrida a la derecha (0% muestra el lado izquierdo de la foto), así la
+       figura sale de detrás del texto. */
+    background-position: 0% 8%;
     -webkit-mask-image: none; mask-image: none;
-    /* Acá el texto va encima de la foto: se mantiene el oscurecido original. */
-    filter: grayscale(0.4) contrast(1.05) brightness(0.5);
+    /* Más luz que antes (0.5): en el celu la foto quedaba casi negra. */
+    filter: grayscale(0.4) contrast(1.05) brightness(0.7);
   }
+  /* Velo fuerte donde va el texto y abierto hacia la derecha/abajo, que es
+     donde ahora queda ella. */
   .about__bg::after {
-    background: linear-gradient(100deg, rgba(8,8,7,0.96) 30%, rgba(8,8,7,0.55) 100%);
+    background: linear-gradient(100deg, rgba(8,8,7,0.95) 0%, rgba(8,8,7,0.72) 42%, rgba(8,8,7,0.12) 100%);
     box-shadow: none;
   }
 
