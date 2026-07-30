@@ -310,11 +310,15 @@ body.is-table .book::after  { opacity: 1; }
 }
 
 /* ── PORTADA ── */
+/* container-type: size → los tamaños van en `cqw` (1cqw = 1% del ancho útil de
+   la página). Con clamps en `vw` el texto escalaba con el viewport y la página
+   con otra proporción, así que en notebooks (<1920) el título se salía. */
 .pg--cover {
+  container-type: size;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: clamp(36px, 7vw, 84px);
+  padding: 6.8%;
   cursor: pointer;
   background-image:
     linear-gradient(100deg, rgba(6,6,6,0.92) 0%, rgba(6,6,6,0.6) 42%, rgba(6,6,6,0.32) 100%),
@@ -323,26 +327,26 @@ body.is-table .book::after  { opacity: 1; }
   background-position: center;
 }
 .cover-title {
-  font-size: clamp(72px, 15vw, 220px);
+  font-size: 20.5cqw;
   line-height: 0.8;
   color: var(--cream);
 }
 .cover-by {
-  margin-top: clamp(22px, 4vw, 40px);
+  margin-top: 3.7cqw;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0.56cqw;
 }
 .cover-by__name {
-  font-size: clamp(30px, 5.2vw, 66px);
+  font-size: 6.15cqw;
   font-weight: 800;
   line-height: 1.0;
   letter-spacing: -0.01em;
-  margin-bottom: 8px;
+  margin-bottom: 0.75cqw;
   color: var(--accent);          /* naranjita */
 }
 .cover-by__role {
-  font-size: 11px;
+  font-size: 1.03cqw;
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--cream-dim);       /* blanquito-grisecito */
@@ -399,7 +403,9 @@ body.is-table .book::after  { opacity: 1; }
 .toc2__line { flex: 1; border-bottom: 1px dotted rgba(242,236,225,0.2); transform: translateY(-5px); }
 
 /* ── SOBRE MÍ ── */
-.pg--about { display: flex; background: #080807; }
+/* Mismo criterio que la portada y el índice: `cqw` para que el bloque de texto
+   escale con la página y no toque los bordes en pantallas chicas. */
+.pg--about { container-type: size; display: flex; background: #080807; }
 /* La foto arranca a la derecha (no ocupa todo el ancho): la franja izquierda
    queda negra y el texto se lee sobre ella. `background-position` bajo muestra
    la parte izquierda de la propia foto. */
@@ -435,17 +441,17 @@ body.is-table .book::after  { opacity: 1; }
   position: relative;
   z-index: 2;
   align-self: center;
-  max-width: 640px;
-  padding: clamp(40px, 7vw, 90px);
+  max-width: 51.6cqw;
+  padding: 7.26cqw;
 }
-.about__inner .kicker { margin-bottom: 18px; }
+.about__inner .kicker { margin-bottom: 1.45cqw; }
 .about-title {
-  font-size: clamp(40px, 7.5vw, 94px);
+  font-size: 7.58cqw;
   color: var(--cream);
-  margin-bottom: 26px;
+  margin-bottom: 2.1cqw;
 }
 .about__bio {
-  font-size: clamp(14px, 1.5vw, 16px);
+  font-size: 1.29cqw;
   line-height: 1.7;
   color: var(--cream-dim);
   max-width: 48ch;
@@ -454,17 +460,17 @@ body.is-table .book::after  { opacity: 1; }
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 28px;
+  gap: 0.65cqw;
+  margin-top: 2.26cqw;
 }
 .about__tags li {
-  font-size: 10px;
+  font-size: 0.81cqw;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--cream-dim);
   border: 1px solid var(--line);
   border-radius: 100px;
-  padding: 7px 14px;
+  padding: 0.56cqw 1.13cqw;
 }
 
 /* ── DIVISOR DE SECCIÓN ── */
@@ -1258,6 +1264,21 @@ body.is-table .book::after  { opacity: 1; }
      en la card angosta quedan chicos y dejan la card medio vacía. Acá escalamos
      con base en la ALTURA (`cqh`) para llenarla; los labels se topan por ancho
      con `min(…cqw)` para no desbordar en pantallas angostas. */
+  /* Portada y Sobre mí en el celu: la card es angosta y los `cqw` de escritorio
+     darían un texto diminuto, así que se conservan los tamaños de antes. */
+  .pg--cover { padding: clamp(36px, 7vw, 84px); }
+  .cover-title { font-size: clamp(72px, 15vw, 220px); }
+  .cover-by { margin-top: clamp(22px, 4vw, 40px); gap: 6px; }
+  .cover-by__name { font-size: clamp(30px, 5.2vw, 66px); margin-bottom: 8px; }
+  .cover-by__role { font-size: 11px; }
+
+  .about__inner { max-width: 640px; padding: clamp(40px, 7vw, 90px); }
+  .about__inner .kicker { margin-bottom: 18px; }
+  .about-title { font-size: clamp(40px, 7.5vw, 94px); margin-bottom: 26px; }
+  .about__bio { font-size: clamp(14px, 1.5vw, 16px); }
+  .about__tags { gap: 8px; margin-top: 28px; }
+  .about__tags li { font-size: 10px; padding: 7px 14px; }
+
   /* «CONTENIDO» arranca debajo del rótulo «Índice» de la barra superior (55px):
      antes se superponían. Al achicar la caja de contenido, las medidas en `cqh`
      se recalculan solas y el índice queda algo más compacto — que es lo buscado. */
