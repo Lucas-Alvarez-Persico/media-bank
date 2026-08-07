@@ -363,21 +363,23 @@ body.is-table .book::after  { opacity: 1; }
   display: flex;
   flex-direction: column;
   justify-content: center;
-  /* Menos padding vertical que horizontal: el índice (título + 7 ítems) llenaba
-     casi toda la altura y así entra con margen a cualquier tamaño. */
-  padding: 4.5% 6.5%;
+  /* El padding superior deja pasar el rótulo «Índice» de la barra (55px), que
+     va posicionado absoluto: sin esto el título se le montaba encima. */
+  padding: 72px 6.5% 4.5%;
 }
 .toc-title {
   font-size: 9.65cqw;
   color: var(--cream);
-  margin-bottom: 3.34cqw;
+  margin-bottom: 2.4cqw;
 }
 .toc2 { list-style: none; }
 .toc2__item {
   display: flex;
   align-items: baseline;
   gap: 1.85cqw;
-  padding: 1.67cqw 0;
+  /* Se toma también por alto (`cqh`): así el índice se compacta solo si más
+     adelante se suman secciones, en vez de desbordarse. */
+  padding: min(1.5cqw, 2cqh) 0;
   border-top: 1px solid var(--line);
   cursor: pointer;
   transition: padding-left var(--transition), color var(--transition);
@@ -905,9 +907,11 @@ body.is-table .book::after  { opacity: 1; }
 
 /* Botón que despliega el CV por encima de la revista */
 .thanks__cv {
-  margin-top: 2.1cqw;
-  display: inline-flex; align-items: center; gap: 0.8cqw;
-  align-self: flex-start;
+  margin-top: 1.7cqw;
+  /* `flex` + `fit-content`: cae en su propia línea debajo de Muna Films (si
+     fuera inline se acomodaría al lado) y arranca en el mismo borde izquierdo. */
+  display: flex; align-items: center; gap: 0.8cqw;
+  width: fit-content;
   font-family: 'Archivo', sans-serif;
   font-size: 1.16cqw; font-weight: 700;
   letter-spacing: 0.18em; text-transform: uppercase;
@@ -1432,8 +1436,8 @@ body.cv-abierto .topnav { opacity: 0; pointer-events: none; }
      antes se superponían. Al achicar la caja de contenido, las medidas en `cqh`
      se recalculan solas y el índice queda algo más compacto — que es lo buscado. */
   .pg--toc { padding-top: 64px; }
-  .toc-title { font-size: min(9.5cqh, 14cqw); margin-bottom: 4cqh; }
-  .toc2__item { padding: 4.3cqh 0; }
+  .toc-title { font-size: min(9.5cqh, 14cqw); margin-bottom: 3cqh; }
+  .toc2__item { padding: 3.5cqh 0; }
   .toc2__n { font-size: 2.2cqw; width: 5.5cqw; }
   .toc2__label { font-size: min(5cqh, 5.6cqw); }
 
