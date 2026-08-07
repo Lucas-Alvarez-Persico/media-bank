@@ -58,6 +58,25 @@
     <p class="lightbox__caption" id="lbCaption"></p>
   </div>
 
+  <!-- ── CV ── Se despliega por encima de la revista desde la página de contacto.
+       Se muestra la página del PDF ya rasterizada (los visores de PDF embebidos
+       fallan en iOS) y el botón descarga el PDF original. -->
+  <section class="cv" id="cv" aria-hidden="true" aria-label="Curriculum Vitae">
+    <!-- La hoja cae desde arriba y queda apoyada sobre la revista, apenas
+         torcida. Al tocarla se acerca para leerla cómoda. -->
+    <div class="cv__stage" id="cvStage">
+      <div class="cv__sheet" id="cvSheet" role="button" tabindex="0" aria-label="Acercar el CV">
+        <img class="cv__page" id="cvPage" alt="Curriculum Vitae de Martina López Parafita"
+             data-src="assets/cv-1.jpg" width="1600" height="2263" />
+      </div>
+    </div>
+    <div class="cv__bar">
+      <a class="cv__btn cv__btn--dl" href="assets/cv-martina-lopez-parafita.pdf"
+         download="CV - Martina Lopez Parafita.pdf">Descargar PDF &#8595;</a>
+      <button class="cv__btn" id="cvClose">Volver a la revista &#10005;</button>
+    </div>
+  </section>
+
   <script src="app.js"></script>
 </body>
 </html>
