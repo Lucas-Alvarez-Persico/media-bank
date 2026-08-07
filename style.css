@@ -1271,9 +1271,16 @@ body.is-table .book::after  { opacity: 1; }
   z-index: 900;
   background: transparent;
   opacity: 0; pointer-events: none;
-  transition: opacity 0.3s ease;
+  /* `visibility` además saca los botones del orden de tabulación mientras el CV
+     está cerrado (se aplica recién al terminar el fundido). */
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
 }
-.cv.open { opacity: 1; pointer-events: all; }
+.cv.open {
+  opacity: 1; pointer-events: all;
+  visibility: visible;
+  transition: opacity 0.3s ease, visibility 0s;
+}
 
 /* El escenario scrollea y tiene la perspectiva; los botones viven fuera de él
    para quedar anclados arriba aunque se acerque la hoja. */
@@ -1366,9 +1373,12 @@ body.cv-abierto .topnav { opacity: 0; pointer-events: none; }
   pointer-events: none;
 }
 .cv.open .cv__bar { opacity: 1; transition-delay: 0.5s; }
+.cv.open .cv__btn { pointer-events: auto; }
 .cv.is-closing .cv__bar { opacity: 0; transition-delay: 0s; }
 .cv__btn {
-  pointer-events: auto;
+  /* Sólo reciben clicks con el CV abierto: si no, quedaban invisibles pero
+     igual capturaban los taps del navbar, que está justo debajo. */
+  pointer-events: none;
   flex: 0 0 auto; white-space: nowrap;
   font-family: 'Archivo', sans-serif;
   background: rgba(14,13,12,0.9);
