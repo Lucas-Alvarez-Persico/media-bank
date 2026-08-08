@@ -77,6 +77,27 @@
     </div>
   </section>
 
+  <!-- ── CAJA DE CD ── La tapa del disco se abre acá, ampliada y en 3D: al
+       tocarla gira y muestra el reverso; tocando fuera se cierra. -->
+  <section class="disc" id="disc" aria-hidden="true" aria-label="Caja del disco">
+    <div class="disc__stage" id="discStage">
+      <!-- El contenedor hace la entrada; la caja sólo gira. Si la animación de
+           entrada viviera en la caja, su estado final pisaría el giro. -->
+      <div class="disc__holder">
+      <div class="disc__case" id="discCase" role="button" tabindex="0"
+           aria-label="Dar vuelta la caja del disco">
+        <div class="disc__face disc__face--front">
+          <img id="discFront" alt="Frente de la tapa del disco" />
+        </div>
+        <div class="disc__face disc__face--back">
+          <img id="discBack" alt="Reverso de la tapa del disco" />
+        </div>
+      </div>
+      </div>
+    </div>
+    <p class="disc__hint" id="discHint">Tocá la caja para darla vuelta</p>
+  </section>
+
   <script src="app.js"></script>
 </body>
 </html>

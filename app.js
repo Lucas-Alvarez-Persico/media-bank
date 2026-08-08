@@ -252,7 +252,12 @@ const sections = [
     works: [
       { title: 'Las Palabras Justas', meta: 'Franco Martínez', variant: 'editorial',
         desc: 'Desarrollo de la identidad visual del álbum a partir de una serie fotográfica de retratos y detalles, trabajando una estética de colores intensos y una propuesta tipográfica integrada a la imagen. La propuesta toma como punto de partida la relación entre la mirada y las palabras, en diálogo con el concepto de «Los ojos tienen las palabras justas».',
-        items: [] }, // TODO: cargar la tapa cuando llegue la imagen
+        cover: 'fotos/tapa-de-disco/las-palabras-justas-frente.jpg',
+        // Al tocar la tapa se abre la caja de CD en 3D, que se da vuelta.
+        // Cajas fotográficas (del mockup): la caja dibujada por CSS no se veía real.
+        disc: { frente: 'fotos/tapa-de-disco/caja-frente.jpg',
+                reverso: 'fotos/tapa-de-disco/caja-reverso.jpg' },
+        items: [] },
     ],
   },
   {
@@ -649,8 +654,9 @@ function attachPageHandlers(front, def) {
   } else if (def.type === 'work' && def.work) {
     // Sólo la imagen / preview del video, el collage y el CTA "Ver galería"
     // abren el despliegue — no cualquier punto de la página.
+    const abrir = def.work.disc ? () => openDisc(def.work) : () => openWork(def.work);
     front.querySelectorAll('.work-bg, .work-img, .collage__cell, .media-play, .work-cta').forEach(el => {
-      el.addEventListener('click', (e) => { e.stopPropagation(); openWork(def.work); });
+      el.addEventListener('click', (e) => { e.stopPropagation(); abrir(); });
     });
   }
 }
@@ -1157,6 +1163,37 @@ function lbNavigate(dir) {
 }
 
 // ════════════════════════════════════════════════════════════════════════════
+//  CAJA DE CD
+// ════════════════════════════════════════════════════════════════════════════
+// La tapa de un trabajo con `disc` se abre ampliada: cada toque la da vuelta y
+// tocando fuera se vuelve a la página.
+function openDisc(work) {
+  if (!work || !work.disc) return;
+  const d = document.getElementById('disc');
+  document.getElementById('discFront').src = work.disc.frente;
+  document.getElementById('discBack').src  = work.disc.reverso;
+  d.classList.remove('is-flipped');          // siempre abre por el frente
+  d.classList.add('open');
+  d.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function flipDisc() {
+  document.getElementById('disc').classList.toggle('is-flipped');
+}
+
+function closeDisc() {
+  const d = document.getElementById('disc');
+  d.classList.remove('open', 'is-flipped');  // vuelve a la tapa original
+  d.setAttribute('aria-hidden', 'true');
+  if (!document.getElementById('work').classList.contains('open')) {
+    document.body.style.overflow = '';
+  }
+}
+
+const discAbierto = () => document.getElementById('disc').classList.contains('open');
+
+// ════════════════════════════════════════════════════════════════════════════
 //  CV
 // ════════════════════════════════════════════════════════════════════════════
 // Se abre desde la página de contacto, por encima de la revista. La imagen se
@@ -1204,6 +1241,10 @@ const cvAbierto = () => document.getElementById('cv').classList.contains('open')
 document.addEventListener('keydown', (e) => {
   const lb = document.getElementById('lightbox');
   const wk = document.getElementById('work');
+  if (discAbierto()) {
+    if (e.key === 'Escape') closeDisc();
+    return;
+  }
   if (cvAbierto()) {
     if (e.key === 'Escape') closeCV();
     return;
@@ -1309,6 +1350,13 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('navPrev').addEventListener('click', () => go(-1));
   document.getElementById('navNext').addEventListener('click', () => go(1));
   document.getElementById('workClose').addEventListener('click', closeWork);
+  // Caja de CD: la caja gira, el fondo cierra.
+  document.getElementById('discCase').addEventListener('click', (e) => { e.stopPropagation(); flipDisc(); });
+  document.getElementById('discCase').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flipDisc(); }
+  });
+  document.getElementById('discStage').addEventListener('click', closeDisc);
+
   document.getElementById('cvClose').addEventListener('click', closeCV);
   document.getElementById('cvSheet').addEventListener('click', toggleCVZoom);
   document.getElementById('cvSheet').addEventListener('keydown', (e) => {
