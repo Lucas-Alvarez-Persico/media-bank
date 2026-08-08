@@ -1553,6 +1553,20 @@ body.cv-abierto .topnav { opacity: 0; pointer-events: none; }
      hace que el marco ocupe la fila y la imagen lo llene. */
   .v-editorial .work-frame { height: auto; align-self: stretch; display: flex; }
   .v-editorial .work-img { min-height: 0; }
+
+  /* Tapa de disco en el celu: manda el diseño frontal. La imagen se lleva la
+     mayor parte de la página y la descripción queda plegada hasta que se toca
+     (así no hay que achicar la tapa para que entre el texto). */
+  .v-editorial.pg--disco { grid-template-rows: 1.9fr 1fr; }
+  .pg--disco .work-frame { padding: 0; border: none; }
+  .pg--disco .work-img { background-size: contain; background-repeat: no-repeat; background-position: center; }
+  .pg--disco .work-desc {
+    max-height: 0; overflow: hidden; opacity: 0; margin-top: 0;
+    transition: max-height 0.4s ease, opacity 0.3s ease, margin-top 0.3s ease;
+  }
+  .pg--disco.muestra-desc .work-desc {
+    max-height: 40vh; opacity: 1; margin-top: 12px;
+  }
   .v-collage .collage { grid-template-rows: repeat(2, 1fr); }
   .v-collage .collage__cell.c0 { grid-row: span 1; }
   .v-collage .collage__cell.c4 { display: none; }

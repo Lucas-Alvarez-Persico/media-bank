@@ -253,6 +253,7 @@ const sections = [
       { title: 'Las Palabras Justas', meta: 'Franco Martínez', variant: 'editorial',
         desc: 'Desarrollo de la identidad visual del álbum a partir de una serie fotográfica de retratos y detalles, trabajando una estética de colores intensos y una propuesta tipográfica integrada a la imagen. La propuesta toma como punto de partida la relación entre la mirada y las palabras, en diálogo con el concepto de «Los ojos tienen las palabras justas».',
         cover: 'fotos/tapa-de-disco/las-palabras-justas-frente.jpg',
+        cta: 'Ver diseño completo',
         // Al tocar la tapa se abre la caja de CD en 3D, que se da vuelta.
         // Cajas fotográficas (del mockup): la caja dibujada por CSS no se veía real.
         disc: { frente: 'fotos/tapa-de-disco/caja-frente.jpg',
@@ -432,7 +433,9 @@ function workInfoHTML(def) {
   // Los videos no llevan link: la miniatura con el play alcanza. Un trabajo sin
   // material cargado todavía tampoco: no hay galería que abrir.
   const sinGaleria = isVideoWork(w) || (!w.categories && !w.items.length);
-  const cta = sinGaleria ? '' : `<span class="work-cta">Ver galería &#8594;</span>`;
+  // `cta` propio: p. ej. la tapa de disco abre la caja, no una galería.
+  const textoCta = w.cta || (sinGaleria ? '' : 'Ver galería');
+  const cta = textoCta ? `<span class="work-cta">${textoCta} &#8594;</span>` : '';
   // Link al sitio del cliente, si el trabajo lo tiene (p. ej. Distrito BAFA).
   const ext = w.link
     ? `<a class="work-extlink" href="${w.link.href}" target="_blank" rel="noopener">${w.link.label} &#8599;</a>`
@@ -511,7 +514,7 @@ function workHTML(def) {
 
   if (w.variant === 'editorial') {
     return `
-      <div class="pg pg--work v-editorial${vid}${w.numMini ? ' num-mini' : ''}" style="--accent:${acc}">
+      <div class="pg pg--work v-editorial${vid}${w.numMini ? ' num-mini' : ''}${w.disc ? ' pg--disco' : ''}" style="--accent:${acc}">
         <span class="work-no--ghost display">${w.no}</span>
         <div class="work-frame"><div class="work-img lazy-bg" ${workCoverAttrs(w)}>${play}</div></div>
         <div class="work-col">${workInfoHTML(def)}</div>
@@ -656,7 +659,17 @@ function attachPageHandlers(front, def) {
     // abren el despliegue — no cualquier punto de la página.
     const abrir = def.work.disc ? () => openDisc(def.work) : () => openWork(def.work);
     front.querySelectorAll('.work-bg, .work-img, .collage__cell, .media-play, .work-cta').forEach(el => {
-      el.addEventListener('click', (e) => { e.stopPropagation(); abrir(); });
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // Tapa de disco en el celu: la página muestra el diseño frontal grande y
+        // el texto está plegado; tocar la imagen lo despliega. El CTA abre la caja.
+        const enCelu = matchMedia('(max-width: 768px) and (orientation: portrait)').matches;
+        if (def.work.disc && enCelu && !el.classList.contains('work-cta')) {
+          front.querySelector('.pg--disco').classList.toggle('muestra-desc');
+          return;
+        }
+        abrir();
+      });
     });
   }
 }
