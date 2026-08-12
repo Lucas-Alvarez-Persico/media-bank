@@ -228,9 +228,6 @@ const sections = [
             clipBAFA('Joyería')('10-eltrust.mp4', 'El Trust'),
           ] },
           { label: 'Moda', items: [
-            clipBAFA('Moda')('7-evangelina-bomparola.mp4', 'Evangelina Bomparola'),
-            clipBAFA('Moda')('8-evangelina-bomparola.mp4', 'Evangelina Bomparola II'),
-            clipBAFA('Moda')('9-evangelina-bomparola.mp4', 'Evangelina Bomparola III'),
             clipBAFA('Moda')('11-solange-m.mp4', 'Solange'),
             clipBAFA('Moda')('12-solange-m.mp4', 'Solange II'),
             clipBAFA('Moda')('13-solange-m.mp4', 'Solange III'),
