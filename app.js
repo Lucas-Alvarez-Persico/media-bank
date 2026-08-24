@@ -99,7 +99,7 @@ const clipMaker = (dir, meta) => (file, title) => ({
 const clip = clipMaker('hospital-universitario-austral', 'Hospital Universitario Austral');
 const clipLT = clipMaker('lopez-taibo', 'López Taibo');
 // Cortometrajes con el video alojado en el proyecto (no en YouTube).
-const clipBarro = clipMaker('en-el-barro', 'En El Barro');
+const clipTodavia = clipMaker('todavia-nosotras', 'Todavía Nosotras');
 const clipHormiga = clipMaker('plan-hormiga', 'Plan Hormiga');
 // Videos de BAFA (todos en fotos/bafa/). El label de sección va como meta,
 // así el caption del lightbox dice "Cliente — Sección".
@@ -279,10 +279,10 @@ const sections = [
     id: 'cortometrajes', label: 'Cortometrajes', nav: 'Cortos', accent: '#8ab0a4',
     desc: 'Ficción y documental: cámara, producción y arte.',
     works: [
-      { title: 'En El Barro', meta: 'Ficción · Cámara', variant: 'full',
+      { title: 'Todavía Nosotras', meta: 'Ficción · Cámara', variant: 'full',
         desc: 'Cámara para teaser de cortometraje. Tesis universitaria en Facultad de Arquitectura, Diseño y Urbanismo, UBA.',
-        cover: 'fotos/en-el-barro/thumbs/cover.jpg',
-        items: [clipBarro('teaser-en-el-barro.mp4', 'Teaser — En El Barro')] },
+        cover: 'fotos/todavia-nosotras/thumbs/cover.jpg',
+        items: [clipTodavia('teaser-todavia-nosotras.mp4', 'Teaser — Todavía Nosotras')] },
       { title: 'Acumuladores', meta: 'Documental · Producción y Cámara', variant: 'full',
         desc: 'Producción y cámara de un retrato observacional sobre diferentes casos del trastorno obsesivo-compulsivo. Documental para Facultad de Arquitectura, Diseño y Urbanismo, UBA.',
         items: [video('RzHyFfUYjfw', 'Acumuladores', 'Documental')] },
